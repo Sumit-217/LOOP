@@ -1,0 +1,167 @@
+// Project LOOP — Prisma Data Model
+// Technical Specification: Zidio_Project_Web_1.1.pdf Section 07
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums (Mandated by Section 07)
+// ---------------------------------------------------------------------------
+
+enum Role {
+  ADMIN
+  ANALYST
+  VIEWER
+}
+
+enum Sentiment {
+  POS
+  NEU
+  NEG
+}
+
+enum FeedbackStatus {
+  NEW
+  REVIEWED
+  ACTIONED
+}
+
+// ---------------------------------------------------------------------------
+// Core Multi-Tenant Entities
+// ---------------------------------------------------------------------------
+
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  // Relations
+  users    User[]
+  feedback Feedback[]
+  themes   Theme[]
+  reports  Report[]
+
+  @@map("workspaces")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(ANALYST)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Multi-tenant ownership
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  // Authored Voice-of-Customer reports
+  reports Report[] @relation("GeneratedReports")
+
+  @@index([workspaceId])
+  @@map("users")
+}
+
+model Feedback {
+  id            String         @id @default(cuid())
+  content       String         @db.Text
+  channel       String         // e.g. SUPPORT_TICKET, APP_STORE, NPS_SURVEY, SALES_NOTE, COMMUNITY
+  sourceRef     String?        // external ticket/review ID or URL reference
+  customerLabel String?        // optional customer segment, tier, or cohort name
+  sentiment     Sentiment      @default(NEU)
+  sentimentScore Float         @default(0.0) // Range: -1.0 to 1.0
+  status        FeedbackStatus @default(NEW)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Multi-tenant ownership
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  // Relationships
+  themes    FeedbackTheme[]
+  embedding Embedding?
+
+  // Query performance indexes for multi-tenant inbox, filtering & analytics
+  @@index([workspaceId])
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, status])
+  @@index([workspaceId, sentiment])
+  @@index([workspaceId, channel])
+  @@map("feedback")
+}
+
+model Theme {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  color       String?  @default("#6366F1") // UI hex color code
+  createdAt   DateTime @default(now())
+
+  // Multi-tenant ownership
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  // Relationships
+  feedback FeedbackTheme[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+  @@map("themes")
+}
+
+model FeedbackTheme {
+  feedbackId String
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+
+  themeId String
+  theme   Theme @relation(fields: [themeId], references: [id], onDelete: Cascade)
+
+  confidence Float @default(1.0) // Range: 0.0 to 1.0
+
+  @@id([feedbackId, themeId])
+  @@index([feedbackId])
+  @@index([themeId])
+  @@map("feedback_themes")
+}
+
+model Embedding {
+  id         String   @id @default(cuid())
+  feedbackId String   @unique
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+
+  // Stored as Float array in Phase 1; vector similarity search wired in Phase 8
+  vector    Float[]
+  createdAt DateTime @default(now())
+
+  @@map("embeddings")
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  title       String
+  periodStart DateTime
+  periodEnd   DateTime
+  contentJson Json     // Structured executive digest, metrics, quotes, and action items
+  createdAt   DateTime @default(now())
+
+  // Multi-tenant ownership
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  // Creator audit link (nullified if creator user is removed)
+  generatedById String?
+  generatedBy   User?   @relation("GeneratedReports", fields: [generatedById], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([workspaceId, createdAt])
+  @@map("reports")
+}
