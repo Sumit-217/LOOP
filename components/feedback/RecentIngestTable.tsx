@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { FeedbackStatus } from "@prisma/client";
+import { FeedbackStatus, Sentiment, Role } from "@prisma/client";
+import ClassifyFeedbackButton from "./ClassifyFeedbackButton";
 
 interface RecentItem {
   id: string;
@@ -9,15 +10,27 @@ interface RecentItem {
   channel: string;
   customerLabel: string | null;
   sourceRef: string | null;
+  sentiment: Sentiment;
+  sentimentScore: number;
+  featureArea: string | null;
+  rationale: string | null;
   status: FeedbackStatus;
   createdAt: string;
+  themes?: Array<{
+    theme: {
+      id: string;
+      name: string;
+      color: string | null;
+    };
+  }>;
 }
 
 interface RecentIngestTableProps {
   refreshTrigger?: number;
+  userRole?: Role;
 }
 
-export default function RecentIngestTable({ refreshTrigger }: RecentIngestTableProps) {
+export default function RecentIngestTable({ refreshTrigger, userRole }: RecentIngestTableProps) {
   const [items, setItems] = useState<RecentItem[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -27,7 +40,7 @@ export default function RecentIngestTable({ refreshTrigger }: RecentIngestTableP
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/feedback?limit=10");
+      const res = await fetch("/api/feedback?limit=15");
       if (!res.ok) throw new Error("Failed to load workspace feedback");
       const data = await res.json();
       setItems(data.items || []);
@@ -60,11 +73,49 @@ export default function RecentIngestTable({ refreshTrigger }: RecentIngestTableP
     }
   };
 
+  const renderSentimentBadge = (item: RecentItem) => {
+    const isClassified = Boolean(item.featureArea || item.sentimentScore !== 0.0 || item.sentiment !== "NEU");
+
+    if (!isClassified) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-dashed border-slate-700 bg-slate-900/60 text-slate-400 text-[10px] font-mono">
+          <span className="h-1.5 w-1.5 rounded-full bg-slate-500" />
+          Unclassified
+        </span>
+      );
+    }
+
+    if (item.sentiment === "POS") {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 font-bold text-[10px]">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          POS {item.sentimentScore > 0 ? `+${item.sentimentScore.toFixed(2)}` : item.sentimentScore.toFixed(2)}
+        </span>
+      );
+    }
+
+    if (item.sentiment === "NEG") {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-300 font-bold text-[10px]">
+          <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
+          NEG {item.sentimentScore.toFixed(2)}
+        </span>
+      );
+    }
+
+    return (
+      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 font-bold text-[10px]">
+        <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+        NEU {item.sentimentScore >= 0 ? `+${item.sentimentScore.toFixed(2)}` : item.sentimentScore.toFixed(2)}
+      </span>
+    );
+  };
+
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 backdrop-blur-sm space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-white">Recently Ingested Feedback</h2>
+          <h2 className="text-lg font-bold text-white">Recently Ingested & Classified Feedback</h2>
           <p className="text-xs text-slate-400 mt-0.5">
             Showing latest {items.length} items from {totalCount} total in active workspace.
           </p>
@@ -111,49 +162,91 @@ export default function RecentIngestTable({ refreshTrigger }: RecentIngestTableP
           <table className="w-full text-left text-xs text-slate-300">
             <thead className="border-b border-slate-800 text-slate-500 uppercase tracking-wider text-[11px]">
               <tr>
-                <th className="py-2.5 px-3">Status</th>
+                <th className="py-2.5 px-3">Sentiment</th>
+                <th className="py-2.5 px-3">Feature Area</th>
                 <th className="py-2.5 px-3">Channel</th>
-                <th className="py-2.5 px-3">Customer Cohort</th>
-                <th className="py-2.5 px-3">Content</th>
-                <th className="py-2.5 px-3">Source Ref</th>
-                <th className="py-2.5 px-3 text-right">Date</th>
+                <th className="py-2.5 px-3">Content & Rationale</th>
+                <th className="py-2.5 px-3">Themes</th>
+                <th className="py-2.5 px-3 text-right">AI Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
-              {items.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-800/30 transition-colors">
-                  <td className="py-3 px-3 whitespace-nowrap">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 font-bold text-[10px]">
-                      <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
-                      {item.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-3 whitespace-nowrap">
-                    <span
-                      className={`px-2 py-0.5 rounded-md border text-[10px] font-semibold ${getChannelBadge(
-                        item.channel
-                      )}`}
-                    >
-                      {item.channel}
-                    </span>
-                  </td>
-                  <td className="py-3 px-3 whitespace-nowrap text-slate-400 text-[11px]">
-                    {item.customerLabel || "—"}
-                  </td>
-                  <td className="py-3 px-3 max-w-md text-slate-200">
-                    <p className="line-clamp-2">{item.content}</p>
-                  </td>
-                  <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-slate-400">
-                    {item.sourceRef || "—"}
-                  </td>
-                  <td className="py-3 px-3 whitespace-nowrap text-right text-slate-500 text-[11px]">
-                    {new Date(item.createdAt).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </td>
-                </tr>
-              ))}
+              {items.map((item) => {
+                const isClassified = Boolean(item.featureArea || item.sentimentScore !== 0.0 || item.sentiment !== "NEU");
+
+                return (
+                  <tr key={item.id} className="hover:bg-slate-800/30 transition-colors">
+                    {/* Sentiment & Score */}
+                    <td className="py-3 px-3 whitespace-nowrap align-top">
+                      {renderSentimentBadge(item)}
+                    </td>
+
+                    {/* Feature Area */}
+                    <td className="py-3 px-3 whitespace-nowrap align-top">
+                      {item.featureArea ? (
+                        <span className="px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30 text-purple-300 font-semibold text-[10px]">
+                          {item.featureArea}
+                        </span>
+                      ) : (
+                        <span className="text-slate-600 font-mono text-[11px]">—</span>
+                      )}
+                    </td>
+
+                    {/* Channel */}
+                    <td className="py-3 px-3 whitespace-nowrap align-top">
+                      <span
+                        className={`px-2 py-0.5 rounded-md border text-[10px] font-semibold ${getChannelBadge(
+                          item.channel
+                        )}`}
+                      >
+                        {item.channel}
+                      </span>
+                    </td>
+
+                    {/* Content & Rationale */}
+                    <td className="py-3 px-3 max-w-sm align-top space-y-1">
+                      <p className="text-slate-200 line-clamp-2">{item.content}</p>
+                      {item.rationale && (
+                        <p className="text-[11px] text-indigo-300/80 italic line-clamp-1">
+                          💡 {item.rationale}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono">
+                        {item.customerLabel && <span>{item.customerLabel}</span>}
+                        {item.sourceRef && <span>• {item.sourceRef}</span>}
+                      </div>
+                    </td>
+
+                    {/* Themes */}
+                    <td className="py-3 px-3 align-top">
+                      <div className="flex flex-wrap gap-1 max-w-xs">
+                        {item.themes && item.themes.length > 0 ? (
+                          item.themes.map((t) => (
+                            <span
+                              key={t.theme.id}
+                              className="px-1.5 py-0.5 rounded text-[10px] font-medium border border-slate-700 bg-slate-800 text-slate-300"
+                            >
+                              {t.theme.name}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-slate-600 font-mono text-[11px]">—</span>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Action */}
+                    <td className="py-3 px-3 whitespace-nowrap text-right align-top">
+                      <ClassifyFeedbackButton
+                        feedbackId={item.id}
+                        isClassified={isClassified}
+                        userRole={userRole}
+                        onSuccess={fetchRecentItems}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

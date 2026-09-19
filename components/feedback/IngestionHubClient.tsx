@@ -111,7 +111,7 @@ export default function IngestionHubClient({ userRole, workspaceName }: Ingestio
 
       {/* Real-time Workspace Feedback Feed */}
       <div>
-        <RecentIngestTable refreshTrigger={refreshKey} />
+        <RecentIngestTable userRole={userRole} refreshTrigger={refreshKey} />
       </div>
     </div>
   );

@@ -78,6 +78,8 @@ model Feedback {
   customerLabel String?        // optional customer segment, tier, or cohort name
   sentiment     Sentiment      @default(NEU)
   sentimentScore Float         @default(0.0) // Range: -1.0 to 1.0
+  featureArea   String?        // short functional-area label from AI classification
+  rationale     String?        @db.Text // concise explanation of AI classification
   status        FeedbackStatus @default(NEW)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt

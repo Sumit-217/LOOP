@@ -1,0 +1,51 @@
+content,channel,sourceRef,customerLabel,createdAt
+"The billing page throws a 504 gateway timeout whenever our accounting team tries to export PDF invoices.",SUPPORT_TICKET,ZD-11201,Enterprise Tier,2024-03-01T08:15:00Z
+"Team invite emails are not being delivered to users with custom subdomains or plus-addressing.",SUPPORT_TICKET,ZD-11202,Pro SaaS,2024-03-01T11:42:00Z
+"Our SAML SSO integration with Okta started failing after the weekend certificate rollover.",SUPPORT_TICKET,ZD-11203,Enterprise Tier,2024-03-02T09:20:00Z
+"We need to update our primary company credit card but the payment modal is unresponsive on Firefox.",SUPPORT_TICKET,ZD-11204,SMB Tier,2024-03-02T14:05:00Z
+"Can we increase our REST API rate limits from 60 to 300 requests per minute for our nightly data sync?",SUPPORT_TICKET,ZD-11205,FinTech Scaleup,2024-03-03T10:10:00Z
+"Customer support rep helped us debug our webhook secret verification in less than five minutes. Excellent service!",SUPPORT_TICKET,ZD-11206,Pro SaaS,2024-03-03T16:30:00Z
+"Weekly Voice-of-Customer email digest was dispatched twice this morning to all administrators.",SUPPORT_TICKET,ZD-11207,Healthcare Cohort,2024-03-04T08:00:00Z
+"Cannot delete an obsolete theme category because it is still linked to archived feedback records.",SUPPORT_TICKET,ZD-11208,Mid-Market,2024-03-04T13:25:00Z
+"User role changes from Viewer to Analyst are taking over ten minutes to reflect in the active browser session.",SUPPORT_TICKET,ZD-11209,Enterprise Tier,2024-03-05T09:45:00Z
+"The CSV export button is disabled when filtering across more than three distinct tags simultaneously.",SUPPORT_TICKET,ZD-11210,SMB Tier,2024-03-05T15:10:00Z
+"The new dashboard layout on iPad is stunning and loads twice as fast as the previous build!",APP_STORE,AS-REV-5401,iPad Pro User,2024-03-06T07:30:00Z
+"FaceID login fails intermittently on iOS 17.4 forcing manual password entry every morning.",APP_STORE,AS-REV-5402,iOS User (v2.4),2024-03-06T12:15:00Z
+"App crashes immediately upon opening the VoC executive summary report when offline in airplane mode.",APP_STORE,GP-REV-3201,Android User,2024-03-07T08:50:00Z
+"Clean dark-mode aesthetic and super smooth chart interactions. Easily the best mobile triage tool we use.",APP_STORE,AS-REV-5403,iOS User (v2.4),2024-03-07T14:40:00Z
+"Push notifications for negative sentiment spikes are delayed by three hours on Android 14.",APP_STORE,GP-REV-3202,Samsung S24 User,2024-03-08T10:05:00Z
+"Would love an iOS home screen widget that displays today's feedback volume and top trending theme.",APP_STORE,AS-REV-5404,iOS User (v2.4),2024-03-08T17:20:00Z
+"The pull-to-refresh animation occasionally stutters when reloading large feedback lists.",APP_STORE,AS-REV-5405,iPhone 15 Pro,2024-03-09T09:10:00Z
+"Biometric fingerprint authentication works instantly on Pixel 8. Very convenient for quick updates.",APP_STORE,GP-REV-3203,Pixel 8 User,2024-03-09T13:35:00Z
+"Font size in the feedback detail card does not respect the system dynamic text accessibility setting.",APP_STORE,AS-REV-5406,iOS User (v2.3),2024-03-10T11:00:00Z
+"Incredible tool for tracking product sentiment on the go during customer conferences.",APP_STORE,GP-REV-3204,Android User,2024-03-10T16:45:00Z
+"NPS 10/10: The Ask LOOP grounded Q&A is like having a full-time customer research analyst on demand.",NPS_SURVEY,NPS-2024-Q1-01,Enterprise Cohort,2024-03-11T09:00:00Z
+"NPS 8/10: Web dashboard is exceptionally powerful but we still need automated Slack alert integrations.",NPS_SURVEY,NPS-2024-Q1-02,Pro SaaS,2024-03-11T14:20:00Z
+"NPS 3/10: Frustrated by frequent 504 timeouts when downloading monthly VAT invoices.",NPS_SURVEY,NPS-2024-Q1-03,SMB Tier,2024-03-12T10:15:00Z
+"NPS 9/10: Automated theme clustering saved our product team dozens of hours during sprint planning.",NPS_SURVEY,NPS-2024-Q1-04,Enterprise Cohort,2024-03-12T15:30:00Z
+"NPS 5/10: The tool works well on desktop but mobile triage requires significant improvements.",NPS_SURVEY,NPS-2024-Q1-05,Mid-Market,2024-03-13T08:45:00Z
+"NPS 10/10: Executive VoC reports format cleanly for our executive leadership meetings without manual editing.",NPS_SURVEY,NPS-2024-Q1-06,Healthcare Cohort,2024-03-13T13:10:00Z
+"NPS 4/10: Onboarding tutorial skipped team permission setup which caused initial confusion.",NPS_SURVEY,NPS-2024-Q1-07,New Signup,2024-03-14T09:50:00Z
+"NPS 9/10: Multi-tenant workspace isolation and RBAC controls satisfied all our security requirements.",NPS_SURVEY,NPS-2024-Q1-08,Security Team,2024-03-14T16:00:00Z
+"NPS 6/10: Product is good overall but pricing tiers should be clearer regarding included viewer seats.",NPS_SURVEY,NPS-2024-Q1-09,SMB Tier,2024-03-15T11:20:00Z
+"NPS 10/10: Fastest customer feedback platform we have evaluated. Highly recommended for growth teams.",NPS_SURVEY,NPS-2024-Q1-10,FinTech Scaleup,2024-03-15T17:05:00Z
+"Prospect call with VP of Engineering at FinCorp: Deal blocked on SAML SSO support and SOC2 compliance report.",SALES_NOTE,CRM-OPP-901,Prospect: FinCorp ($60k ARR),2024-03-16T08:30:00Z
+"Live demo reaction: Head of Product loved the Ask LOOP citation mechanism and zero-hallucination guardrails.",SALES_NOTE,CRM-OPP-902,Prospect: MedGlobal ($45k ARR),2024-03-16T12:00:00Z
+"Churn risk alert: Customer CTO mentioned they will churn next quarter unless direct Snowflake sync is added.",SALES_NOTE,CRM-OPP-903,Account: CloudMatrix ($36k ARR),2024-03-17T09:40:00Z
+"Expansion opportunity: Client requested 20 additional Analyst seats if custom theme grouping is delivered.",SALES_NOTE,CRM-OPP-904,Account: RetailGiant ($80k ARR),2024-03-17T15:15:00Z
+"Lost deal debrief: Prospect selected competitor because LOOP does not yet offer native Zapier connectors.",SALES_NOTE,CRM-OPP-905,Lost Prospect: AdAgency Co,2024-03-18T10:25:00Z
+"QBR feedback: VP of CX reported a 35% reduction in customer escalation triage time using spike detection.",SALES_NOTE,CRM-OPP-906,Account: LogiTech ($50k ARR),2024-03-18T14:50:00Z
+"Procurement security questionnaire: European subsidiary requires GDPR data residency guarantees in Frankfurt.",SALES_NOTE,CRM-OPP-907,Prospect: EuroBank ($90k ARR),2024-03-19T09:15:00Z
+"Demo follow-up: Head of Support praised the simulated Zendesk ingest button for rapid team onboarding.",SALES_NOTE,CRM-OPP-908,Prospect: SaaSify ($28k ARR),2024-03-19T13:40:00Z
+"Executive check-in: CFO highlighted that LOOP insights identified onboarding churn friction saving $15k MRR.",SALES_NOTE,CRM-OPP-909,Account: HealthPulse ($65k ARR),2024-03-20T11:00:00Z
+"Closed-won enterprise contract: Signed $75k annual commitment citing multi-tenancy and RBAC governance.",SALES_NOTE,CRM-OPP-910,Client: GlobalRetail ($75k ARR),2024-03-20T16:30:00Z
+"Loving the clean dark mode layout! Finally a B2B SaaS tool that looks like it was designed this decade.",COMMUNITY,DISCORD-MSG-1401,Discord Community,2024-03-21T08:10:00Z
+"Has anyone configured automated webhook ingestion from Typeform into LOOP via a custom serverless worker?",COMMUNITY,FORUM-THREAD-501,User Forum,2024-03-21T11:55:00Z
+"Just imported our historical survey responses using the CSV uploader. 500 rows parsed in two seconds flat.",COMMUNITY,DISCORD-MSG-1402,Discord Community,2024-03-22T09:30:00Z
+"Feature request: Can we get keyboard shortcuts for changing feedback status between NEW, REVIEWED, and ACTIONED?",COMMUNITY,FORUM-THREAD-502,User Forum,2024-03-22T14:15:00Z
+"The Ask LOOP grounded citations are super accurate — it cited an obscure review from our beta test last month.",COMMUNITY,X-POST-8201,Twitter / X Post,2024-03-23T10:40:00Z
+"Getting intermittent CORS errors when calling the feedback API from our custom client-side feedback widget.",COMMUNITY,DISCORD-MSG-1403,Discord Community,2024-03-23T15:20:00Z
+"Would love a Figma community widget that displays live customer feedback quotes beside design canvases.",COMMUNITY,FORUM-THREAD-503,User Forum,2024-03-24T09:05:00Z
+"Kudos to the engineering team for 100% uptime over our busiest Black Friday shopping weekend.",COMMUNITY,LI-POST-610,LinkedIn Post,2024-03-24T13:50:00Z
+"Weekly VoC digests have completely replaced our manual customer insight presentation decks.",COMMUNITY,PH-THREAD-302,Product Hunt Community,2024-03-25T10:15:00Z
+"Zero regrets migrating to LOOP. The role permissions allow our junior analysts to triage without any security risk.",COMMUNITY,LI-POST-611,LinkedIn Post,2024-03-25T16:00:00Z
