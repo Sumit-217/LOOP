@@ -8,17 +8,17 @@ Project LOOP is a corporate-grade multi-tenant web application designed to help 
 
 ## Current Phase
 
-**Phase 1 — Database & Multi-Tenancy Foundation**
+**Phase 2 — Authentication & RBAC**
 
-The relational data layer and multi-tenant foundation are established using **PostgreSQL** and **Prisma ORM**. All Section 07 core entities, relationships, constraints, and indexes are modeled and verified.
+Multi-tenant credentials authentication is established using **NextAuth.js (Auth.js)**, salted **bcrypt** password hashing, atomic workspace signup, persistent JWT sessions, and server-side role authorization (`ADMIN`, `ANALYST`, `VIEWER`).
 
 ---
 
 ## Current Status
 
 > [!NOTE]
-> **Authentication and business functionality are not implemented yet.**
-> In accordance with the Phase 1 specification, database models and multi-tenancy foundations are implemented. NextAuth authentication, feedback ingestion, UI dashboards, and AI services will follow in subsequent phases.
+> **Authentication, workspace isolation, and RBAC are implemented and verified.**
+> In accordance with the Phase 2 specification, feedback ingestion, analytics dashboards, and AI services will follow in subsequent phases.
 
 ---
 
@@ -31,7 +31,7 @@ Derived strictly from `Zidio_Project_Web_1.1.pdf`:
 - **Styling**: Tailwind CSS
 - **Database**: PostgreSQL (Neon / Supabase)
 - **ORM**: Prisma ORM (v5.22.0 LTS)
-- **Authentication**: NextAuth.js (Auth.js) *(Phase 2)*
+- **Authentication**: NextAuth.js (Auth.js v4) + bcryptjs
 - **AI Intelligence**: Anthropic Claude API (`claude-sonnet-4-6` / Sonnet) *(Phase 6+)*
 - **Embeddings & Search**: Vector embeddings (pgvector / hosted provider) *(Phase 8)*
 - **Visualizations**: Recharts *(Phase 5)*
@@ -40,83 +40,33 @@ Derived strictly from `Zidio_Project_Web_1.1.pdf`:
 
 ---
 
-## Database Schema & Multi-Tenancy Architecture
+## Role-Based Access Control (RBAC) & Permissions Matrix
 
-The database schema strictly adheres to Section 07 of the project specification. Every tenant-owned table carries a `workspaceId` foreign key and is backed by query-optimization compound indexes.
+| Capability / Resource | ADMIN | ANALYST | VIEWER |
+| :--- | :---: | :---: | :---: |
+| Access Authenticated App (`/dashboard`) | ✅ | ✅ | ✅ |
+| View Workspace Intelligence & Feedback | ✅ | ✅ | ✅ |
+| View Team Members (`/settings/members`) | ✅ | ❌ | ❌ |
+| Modify Teammate Roles (Admin/Analyst/Viewer) | ✅ | ❌ | ❌ |
+| Create / Ingest Feedback *(Phase 3)* | ✅ | ✅ | ❌ |
+| Triage & Update Feedback Status *(Phase 4)* | ✅ | ✅ | ❌ |
+| Generate Voice-of-Customer Reports *(Phase 9)*| ✅ | ✅ | ❌ |
 
-```mermaid
-erDiagram
-    Workspace ||--o{ User : "has many"
-    Workspace ||--o{ Feedback : "has many"
-    Workspace ||--o{ Theme : "has many"
-    Workspace ||--o{ Report : "has many"
-    User ||--o{ Report : "generatedBy"
-    Feedback ||--o{ FeedbackTheme : "categorized in"
-    Theme ||--o{ FeedbackTheme : "applies to"
-    Feedback ||--o| Embedding : "has one"
+> **Security Rule**: RBAC is strictly enforced server-side via API authorization guards (`requireRole`). Client-side UI element hiding is purely cosmetic; forbidden requests return HTTP `403 Forbidden`.
 
-    Workspace {
-        string id PK
-        string name
-        datetime createdAt
-    }
+---
 
-    User {
-        string id PK
-        string name
-        string email UK
-        string passwordHash
-        enum role "ADMIN | ANALYST | VIEWER"
-        string workspaceId FK
-    }
+## Demo Credentials (Local / Staging Only)
 
-    Feedback {
-        string id PK
-        string content
-        string channel
-        string sourceRef
-        string customerLabel
-        enum sentiment "POS | NEU | NEG"
-        float sentimentScore "-1.0 to 1.0"
-        enum status "NEW | REVIEWED | ACTIONED"
-        string workspaceId FK
-        datetime createdAt
-    }
+The seeded demo workspace comes pre-configured with three role accounts for testing and evaluation:
 
-    Theme {
-        string id PK
-        string name
-        string description
-        string color
-        string workspaceId FK
-    }
+| Role | Email | Password | Scope / Permissions |
+| :--- | :--- | :--- | :--- |
+| **ADMIN** | `admin@loop.demo` | `DemoPass123!` | Full workspace administration & member role management |
+| **ANALYST** | `analyst@loop.demo` | `DemoPass123!` | Feedback ingestion, triage, and reclassification |
+| **VIEWER** | `viewer@loop.demo` | `DemoPass123!` | Read-only access to feedback intelligence and dashboards |
 
-    FeedbackTheme {
-        string feedbackId PK, FK
-        string themeId PK, FK
-        float confidence "0.0 to 1.0"
-    }
-
-    Embedding {
-        string id PK
-        string feedbackId FK, UK
-        float_array vector
-    }
-
-    Report {
-        string id PK
-        string title
-        datetime periodStart
-        datetime periodEnd
-        json contentJson
-        string workspaceId FK
-        string generatedBy FK
-        datetime createdAt
-    }
-```
-
-### Non-Negotiable Tenant Isolation Rule
-> Every single database query that touches feedback, themes, reports, or users **MUST** be filtered by the authenticated user's `workspaceId`. A user from Company A must never be able to read a single row belonging to Company B — even by guessing an ID in the URL.
+*(Passwords are stored strictly as salted bcrypt one-way hashes; passwordHash is never returned to clients or embedded in session tokens).*
 
 ---
 
@@ -125,16 +75,45 @@ erDiagram
 ```text
 loop/
 ├── app/
+│   ├── (auth)/
+│   │   ├── login/
+│   │   │   └── page.tsx        # Login screen with validation & demo credentials hint
+│   │   └── signup/
+│   │       └── page.tsx        # Signup screen with atomic workspace creation
+│   ├── (app)/
+│   │   ├── layout.tsx          # Authenticated app shell layout
+│   │   ├── dashboard/
+│   │   │   └── page.tsx        # Authenticated overview with role privileges summary
+│   │   └── settings/
+│   │       └── members/
+│   │           └── page.tsx    # Admin member management and role modification
 │   ├── api/
-│   │   └── health/
-│   │       └── route.ts        # Smoke-check health endpoint verifying DB readiness
-│   ├── layout.tsx              # Root application layout
-│   ├── page.tsx                # Phase 1 database status landing page
+│   │   ├── auth/
+│   │   │   ├── [...nextauth]/
+│   │   │   │   └── route.ts    # NextAuth route handler
+│   │   │   └── signup/
+│   │   │       └── route.ts    # Atomic Workspace + Admin User creation
+│   │   ├── health/
+│   │   │   └── route.ts        # Smoke-check health endpoint verifying DB readiness
+│   │   └── members/
+│   │       ├── route.ts        # GET workspace members (scoped by workspaceId)
+│   │       └── [id]/
+│   │           └── route.ts    # PATCH member role (ADMIN only + tenant isolation)
+│   ├── layout.tsx              # Root layout with local fonts and AuthProvider
+│   ├── page.tsx                # Phase 2 status landing page
 │   └── globals.css             # Tailwind CSS directives
-├── components/                 # Reusable UI components
+├── components/
+│   ├── layout/
+│   │   └── AppNavbar.tsx       # Top navbar with active workspace indicator and role badge
+│   └── providers/
+│       └── AuthProvider.tsx    # NextAuth SessionProvider client wrapper
 ├── lib/
+│   ├── auth.ts                 # NextAuth options, session retrieval, and requireRole guards
 │   ├── db.ts                   # Centralized Prisma Client singleton
-│   └── utils.ts                # Tailwind merge and styling utilities
+│   ├── utils.ts                # Tailwind merge utility
+│   └── validations/
+│       └── auth.ts             # Zod schemas for login, signup, and role updates
+├── middleware.ts               # Next.js edge route protection & redirection guard
 ├── prisma/
 │   ├── migrations/
 │   │   └── 0_init/
@@ -142,9 +121,11 @@ loop/
 │   ├── schema.prisma           # Prisma schema with models, enums, & indexes
 │   └── seed.ts                 # Deterministic Phase 1 foundation seed script
 ├── scripts/
-│   └── verify-db.ts            # Automated schema & delegate verification script
+│   ├── verify-db.ts            # Schema and delegate verification script
+│   └── verify-auth-rbac.ts     # Automated authentication and RBAC test suite
 ├── types/
-│   └── index.ts                # Re-exported Prisma types & WorkspaceScoped contract
+│   ├── index.ts                # Re-exported Prisma types & WorkspaceScoped contract
+│   └── next-auth.d.ts          # Typed NextAuth session with role and workspaceId
 ├── .env.example                # Documented template for required environment variables
 ├── .gitignore                  # Git ignore rules protecting secrets and build artifacts
 ├── next.config.mjs             # Next.js configuration
@@ -157,49 +138,48 @@ loop/
 
 ---
 
-## Database Setup & Commands
-
-### 1. Configure Connection
-Place your hosted PostgreSQL connection string (from Neon or Supabase) in `.env.local`:
-
-```env
-DATABASE_URL="postgresql://user:password@ep-sample-123.neon.tech/neondb?sslmode=require"
-```
-
-### 2. Available Database Scripts
-* **Generate Prisma Client**:
-  ```bash
-  npm run db:generate
-  ```
-* **Run Database Migrations**:
-  ```bash
-  npm run db:migrate
-  ```
-* **Run Foundation Seed**:
-  ```bash
-  npm run db:seed
-  ```
-* **Verify Schema & Delegates**:
-  ```bash
-  npx tsx scripts/verify-db.ts
-  ```
-
----
-
 ## Local Setup
 
+### 1. Installation
 ```bash
-# 1. Clone & install
 git clone https://github.com/Sumit-217/LOOP.git
 cd LOOP
 npm install
-
-# 2. Run local dev server
-npm run dev
-
-# 3. Build for production
-npm run build
 ```
+
+### 2. Configure Environment Variables
+Copy `.env.example` to `.env.local` and add your PostgreSQL connection string:
+
+```env
+DATABASE_URL="postgresql://user:password@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require"
+NEXTAUTH_SECRET="a-secure-random-32-character-secret"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+### 3. Database Migration & Seed
+```bash
+# Apply migrations
+npm run db:migrate
+
+# Seed baseline demo workspace & 3 role users
+npm run db:seed
+```
+
+### 4. Running Verification Tests
+```bash
+# Verify schema & delegates
+npx tsx scripts/verify-db.ts
+
+# Verify authentication, signup, RBAC, and tenant isolation
+npx tsx scripts/verify-auth-rbac.ts
+```
+
+### 5. Start Development Server
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
@@ -207,7 +187,7 @@ npm run build
 
 1. ~~Phase 0 — Project Foundation~~ *(Complete)*
 2. ~~Phase 1 — Database & Multi-Tenancy Foundation~~ *(Complete)*
-3. **Phase 2 — Authentication & RBAC**: NextAuth credentials setup, session management, ADMIN/ANALYST/VIEWER role guards, 403 handling.
+3. ~~Phase 2 — Authentication & RBAC~~ *(Complete)*
 4. **Phase 3 — Feedback Ingestion**: Single entry form, CSV bulk parser with summary, simulated channel generator, and complete 120+ seed dataset.
 5. **Phase 4 — Feedback Inbox**: Server-side pagination, multi-filter query builder, full-text search, inline status triage.
 6. **Phase 5 — Analytics Dashboard**: Recharts data visualizations (volume, sentiment, themes), key stat cards, responsive layouts.
