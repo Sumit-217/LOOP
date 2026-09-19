@@ -72,6 +72,17 @@ export default function AppNavbar() {
               Ingest Feedback
             </Link>
 
+            <Link
+              href="/themes"
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                pathname.startsWith("/themes")
+                  ? "bg-slate-800 text-white"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              }`}
+            >
+              Themes & Trends
+            </Link>
+
             {isAdmin && (
               <Link
                 href="/settings/members"

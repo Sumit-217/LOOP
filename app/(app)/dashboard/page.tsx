@@ -32,7 +32,7 @@ export default async function DashboardPage() {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-xs font-semibold tracking-wide uppercase mb-2">
               <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
-              Phase 3 — Feedback Ingestion
+              Phase 5 — Themes & Trends Intelligence
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white">
               Welcome back, {name || "User"}
@@ -58,7 +58,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Real-time Workspace Ingestion Stats */}
+        {/* Real-time Workspace Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
           <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
             <div>
@@ -81,19 +81,35 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Quick Ingestion Action Banner */}
+        {/* Themes & Trends Intelligence Banner */}
         <div className="p-4 rounded-xl border border-indigo-500/20 bg-indigo-950/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <div className="text-xs font-bold text-indigo-300">Phase 3 Feedback Ingestion Hub</div>
+            <div className="text-xs font-bold text-indigo-300">Phase 5 Themes & Trends Intelligence</div>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Explore theme clusters, daily sentiment trajectories, volume distribution, and spike detection signals.
+            </p>
+          </div>
+          <Link
+            href="/themes"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/20 whitespace-nowrap active:scale-95"
+          >
+            Explore Themes & Trends →
+          </Link>
+        </div>
+
+        {/* Quick Ingestion Action Banner */}
+        <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div className="text-xs font-bold text-slate-300">Feedback Ingestion Hub</div>
             <p className="text-xs text-slate-400 mt-0.5">
               Submit single feedback items, import bulk CSV files, or trigger simulated external channel streams.
             </p>
           </div>
           <Link
             href="/feedback/ingest"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/20 whitespace-nowrap active:scale-95"
+            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-all whitespace-nowrap"
           >
-            {isViewer ? "View Ingestion Hub →" : "Ingest Feedback Now →"}
+            {isViewer ? "View Ingestion Hub →" : "Ingest Feedback →"}
           </Link>
         </div>
 
