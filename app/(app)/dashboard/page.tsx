@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { getCurrentSession } from "@/lib/auth";
 import { Role } from "@prisma/client";
+import { db } from "@/lib/db";
 
 export default async function DashboardPage() {
   const session = await getCurrentSession();
@@ -12,16 +13,26 @@ export default async function DashboardPage() {
 
   const { name, role, workspaceName, workspaceId } = session.user;
   const isAdmin = role === Role.ADMIN;
+  const isViewer = role === Role.VIEWER;
+
+  // Fetch real-time count of feedback items in this tenant workspace
+  const feedbackCount = await db.feedback.count({
+    where: { workspaceId },
+  });
+
+  const themesCount = await db.theme.count({
+    where: { workspaceId },
+  });
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Welcome Banner */}
-      <div className="p-6 sm:p-8 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-xl backdrop-blur-sm space-y-4">
+      <div className="p-6 sm:p-8 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-xl backdrop-blur-sm space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-xs font-semibold tracking-wide uppercase mb-2">
               <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
-              Phase 2 — Authentication & RBAC
+              Phase 3 — Feedback Ingestion
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white">
               Welcome back, {name || "User"}
@@ -47,6 +58,45 @@ export default async function DashboardPage() {
           </div>
         </div>
 
+        {/* Real-time Workspace Ingestion Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
+            <div>
+              <div className="text-xs text-slate-400 font-medium">Ingested Feedback Items</div>
+              <div className="text-2xl font-black text-white mt-0.5">{feedbackCount}</div>
+            </div>
+            <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold">
+              💬
+            </div>
+          </div>
+
+          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
+            <div>
+              <div className="text-xs text-slate-400 font-medium">Configured Themes</div>
+              <div className="text-2xl font-black text-white mt-0.5">{themesCount}</div>
+            </div>
+            <div className="h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 font-bold">
+              🏷️
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Ingestion Action Banner */}
+        <div className="p-4 rounded-xl border border-indigo-500/20 bg-indigo-950/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div className="text-xs font-bold text-indigo-300">Phase 3 Feedback Ingestion Hub</div>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Submit single feedback items, import bulk CSV files, or trigger simulated external channel streams.
+            </p>
+          </div>
+          <Link
+            href="/feedback/ingest"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/20 whitespace-nowrap active:scale-95"
+          >
+            {isViewer ? "View Ingestion Hub →" : "Ingest Feedback Now →"}
+          </Link>
+        </div>
+
         {/* Role Permissions Card */}
         <div className="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 text-xs space-y-2">
           <div className="font-semibold text-slate-200">Current Role Privileges:</div>
@@ -65,7 +115,7 @@ export default async function DashboardPage() {
           <div className="pt-2">
             <Link
               href="/settings/members"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors shadow-md shadow-indigo-600/20"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-medium transition-colors"
             >
               Manage Workspace Members & Roles →
             </Link>

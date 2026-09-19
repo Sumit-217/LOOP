@@ -17,7 +17,7 @@ export async function GET() {
     status: "ok",
     app: "LOOP",
     version: "0.1.0",
-    phase: "Phase 2 - Authentication & RBAC",
+    phase: "Phase 3 - Feedback Ingestion",
     database: dbStatus,
     timestamp: new Date().toISOString(),
   });

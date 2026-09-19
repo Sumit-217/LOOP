@@ -61,6 +61,17 @@ export default function AppNavbar() {
               Overview
             </Link>
 
+            <Link
+              href="/feedback/ingest"
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                pathname.startsWith("/feedback/ingest")
+                  ? "bg-slate-800 text-white"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              }`}
+            >
+              Ingest Feedback
+            </Link>
+
             {isAdmin && (
               <Link
                 href="/settings/members"
