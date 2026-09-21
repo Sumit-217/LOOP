@@ -11,7 +11,7 @@ export class GeminiRagAnswerProvider implements RagAnswerProvider {
   public readonly model: string;
   private client: GoogleGenAI;
 
-  constructor(apiKey: string, model = process.env.GEMINI_MODEL || "gemini-2.5-flash") {
+  constructor(apiKey: string, model = process.env.GEMINI_MODEL || "gemini-flash-lite-latest") {
     if (!apiKey) {
       throw new Error("GEMINI_API_KEY is required to instantiate GeminiRagAnswerProvider.");
     }

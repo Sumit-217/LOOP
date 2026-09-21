@@ -4,7 +4,7 @@ import { validateEmbedding } from "@/lib/embeddings/validation";
 export const DEFAULT_TOP_K = 6;
 export const MIN_TOP_K = 3;
 export const MAX_TOP_K = 8;
-export const RELEVANCE_DISTANCE_THRESHOLD = 0.85; // Cosine distance > 0.85 indicates insufficient semantic relevance
+export const RELEVANCE_DISTANCE_THRESHOLD = 0.35; // Calibrated cosine distance threshold for gemini-embedding-001 (distance > 0.35 indicates insufficient semantic relevance)
 
 export interface RetrievedFeedbackItem {
   id: string;
