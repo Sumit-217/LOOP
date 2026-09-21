@@ -94,6 +94,17 @@ export default function AppNavbar() {
               Ask LOOP
             </Link>
 
+            <Link
+              href="/reports"
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                pathname.startsWith("/reports")
+                  ? "bg-slate-800 text-white"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              }`}
+            >
+              VoC Reports
+            </Link>
+
             {isAdmin && (
               <Link
                 href="/settings/members"

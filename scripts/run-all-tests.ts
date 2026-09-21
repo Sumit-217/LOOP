@@ -11,6 +11,7 @@ const SUITES: TestSuite[] = [
   { name: "Phase 5 Themes & Trends Suite", command: "npx tsx scripts/verify-themes-trends.ts" },
   { name: "Phase 6 pgvector Migration Suite", command: "npx tsx scripts/verify-pgvector-migration.ts" },
   { name: "Phase 6 Ask LOOP & Embeddings Suite", command: "npx tsx scripts/verify-ask-loop.ts" },
+  { name: "Phase 7 VoC Reports Suite", command: "npx tsx scripts/verify-voc-reports.ts" },
 ];
 
 async function main() {
