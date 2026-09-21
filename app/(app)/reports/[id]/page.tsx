@@ -153,7 +153,7 @@ export default function ReportDetailPage() {
       <div className="flex items-center justify-between no-print">
         <Link
           href="/reports"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
         >
           <span>←</span> Back to VoC Reports Hub
         </Link>
@@ -161,45 +161,45 @@ export default function ReportDetailPage() {
 
       {/* Action Notice (hidden in print) */}
       {shareNotice && (
-        <div className="p-3 rounded-xl border border-indigo-500/40 bg-indigo-500/10 text-indigo-300 text-xs flex items-center justify-between no-print">
+        <div className="p-3 rounded-xl border border-blue-200 dark:border-blue-500/40 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 text-xs flex items-center justify-between no-print">
           <div className="flex items-center gap-2">
             <span>🔗</span>
             <span>{shareNotice}</span>
           </div>
-          <button onClick={() => setShareNotice(null)} className="text-slate-400 hover:text-white text-xs">
+          <button onClick={() => setShareNotice(null)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white text-xs">
             ✕
           </button>
         </div>
       )}
 
       {/* Report Header & Action Bar */}
-      <div className="p-6 sm:p-8 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-xl backdrop-blur-sm space-y-5 print-card">
+      <div className="p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-5 print-card">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-xs font-semibold tracking-wide uppercase">
-              <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 text-xs font-semibold tracking-wide uppercase">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-600" />
               Voice of Customer Executive Report
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight print-text-dark">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight print-text-dark">
               {report.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 print-text-muted">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400 print-text-muted">
               <div>
                 <strong>Reporting Period:</strong> {new Date(report.periodStart).toLocaleDateString()} —{" "}
                 {new Date(report.periodEnd).toLocaleDateString()} ({content.period.durationDays} days)
               </div>
-              <span className="text-slate-600">•</span>
+              <span className="text-slate-300 dark:text-slate-600">•</span>
               <div>
                 <strong>Prior Comparison:</strong> {new Date(content.comparisonPeriod.start).toLocaleDateString()} —{" "}
                 {new Date(content.comparisonPeriod.end).toLocaleDateString()}
               </div>
-              <span className="text-slate-600">•</span>
+              <span className="text-slate-300 dark:text-slate-600">•</span>
               <div>
                 <strong>Generated:</strong> {new Date(report.createdAt).toLocaleDateString()}
               </div>
               {report.generatedBy && (
                 <>
-                  <span className="text-slate-600">•</span>
+                  <span className="text-slate-300 dark:text-slate-600">•</span>
                   <div>
                     <strong>Author:</strong> {report.generatedBy.name} ({report.generatedBy.email})
                   </div>
@@ -212,21 +212,21 @@ export default function ReportDetailPage() {
           <div className="flex items-center gap-2 no-print self-start">
             <button
               onClick={handleShare}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-medium transition-colors shadow-sm"
               title="Copy shareable URL"
             >
               <span>🔗</span> Share Link
             </button>
             <button
               onClick={handleExportJson}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-medium transition-colors shadow-sm"
               title="Export raw report data as JSON"
             >
               <span>💾</span> Export JSON
             </button>
             <button
               onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-indigo-500/40 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-blue-600 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors shadow-sm"
               title="Print report or save as PDF"
             >
               <span>🖨️</span> Print / PDF
@@ -236,68 +236,68 @@ export default function ReportDetailPage() {
       </div>
 
       {/* 1. Executive Summary */}
-      <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/40 backdrop-blur-sm space-y-3 print-card">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-indigo-400 print-text-dark flex items-center gap-2">
+      <div className="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-3 print-card">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 print-text-dark flex items-center gap-2">
           <span>📋</span> Executive Summary
         </h2>
-        <div className="text-xs sm:text-sm text-slate-300 print-text-dark leading-relaxed whitespace-pre-line space-y-2">
+        <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 print-text-dark leading-relaxed whitespace-pre-line space-y-2">
           {content.executiveSummary}
         </div>
       </div>
 
       {/* 2. Feedback Volume & Sentiment Shifts KPIs */}
       <div className="space-y-4">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 print-text-dark flex items-center gap-2">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 print-text-dark flex items-center gap-2">
           <span>📈</span> Feedback Volume & Sentiment Trajectory
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Total Volume */}
-          <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/40 print-card space-y-1.5">
-            <div className="text-xs text-slate-400 print-text-muted font-medium">Total Feedback Volume</div>
-            <div className="text-2xl font-black text-white print-text-dark">{metrics.totalFeedback}</div>
+          <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm print-card space-y-1.5">
+            <div className="text-xs text-slate-500 dark:text-slate-400 print-text-muted font-medium">Total Feedback Volume</div>
+            <div className="text-2xl font-black text-slate-900 dark:text-white print-text-dark">{metrics.totalFeedback}</div>
             <div className="text-[11px] flex items-center gap-1.5 font-medium">
               <span
                 className={
                   shifts.volumeChange > 0
-                    ? "text-indigo-400"
+                    ? "text-blue-600 dark:text-blue-400"
                     : shifts.volumeChange < 0
-                    ? "text-slate-400"
+                    ? "text-slate-500 dark:text-slate-400"
                     : "text-slate-500"
                 }
               >
                 {shifts.volumeChange > 0 ? "▲" : shifts.volumeChange < 0 ? "▼" : "•"}
                 {shifts.volumeChange > 0 ? `+${shifts.volumeChange}` : shifts.volumeChange} ({shifts.volumeChangePercentage}%)
               </span>
-              <span className="text-slate-500 print-text-muted">vs prior period ({shifts.comparisonMetrics.totalFeedback})</span>
+              <span className="text-slate-400 dark:text-slate-500 print-text-muted">vs prior ({shifts.comparisonMetrics.totalFeedback})</span>
             </div>
           </div>
 
           {/* Negative Sentiment Share */}
-          <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/40 print-card space-y-1.5">
-            <div className="text-xs text-slate-400 print-text-muted font-medium">Negative Sentiment Share</div>
-            <div className="text-2xl font-black text-rose-400">{metrics.negativePercentage.toFixed(1)}%</div>
+          <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm print-card space-y-1.5">
+            <div className="text-xs text-slate-500 dark:text-slate-400 print-text-muted font-medium">Negative Sentiment Share</div>
+            <div className="text-2xl font-black text-rose-600 dark:text-rose-400">{metrics.negativePercentage.toFixed(1)}%</div>
             <div className="text-[11px] flex items-center gap-1.5 font-medium">
               <span
                 className={
                   shifts.negativePercentageShift > 0
-                    ? "text-rose-400"
+                    ? "text-rose-600 dark:text-rose-400"
                     : shifts.negativePercentageShift < 0
-                    ? "text-emerald-400"
+                    ? "text-emerald-600 dark:text-emerald-400"
                     : "text-slate-500"
                 }
               >
                 {shifts.negativePercentageShift > 0 ? "▲" : shifts.negativePercentageShift < 0 ? "▼" : "•"}
                 {shifts.negativePercentageShift > 0 ? `+${shifts.negativePercentageShift.toFixed(1)}` : shifts.negativePercentageShift.toFixed(1)} pts
               </span>
-              <span className="text-slate-500 print-text-muted">vs prior ({shifts.comparisonMetrics.negativePercentage.toFixed(1)}%)</span>
+              <span className="text-slate-400 dark:text-slate-500 print-text-muted">vs prior ({shifts.comparisonMetrics.negativePercentage.toFixed(1)}%)</span>
             </div>
           </div>
 
           {/* Average Sentiment Score */}
-          <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/40 print-card space-y-1.5">
-            <div className="text-xs text-slate-400 print-text-muted font-medium">Average Sentiment Score</div>
-            <div className="text-2xl font-black text-white print-text-dark">
+          <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm print-card space-y-1.5">
+            <div className="text-xs text-slate-500 dark:text-slate-400 print-text-muted font-medium">Average Sentiment Score</div>
+            <div className="text-2xl font-black text-slate-900 dark:text-white print-text-dark">
               {metrics.averageSentimentScore !== null ? (metrics.averageSentimentScore >= 0 ? `+${metrics.averageSentimentScore.toFixed(2)}` : metrics.averageSentimentScore.toFixed(2)) : "N/A"}
             </div>
             <div className="text-[11px] flex items-center gap-1.5 font-medium">
@@ -306,66 +306,66 @@ export default function ReportDetailPage() {
                   <span
                     className={
                       shifts.averageScoreShift > 0
-                        ? "text-emerald-400"
+                        ? "text-emerald-600 dark:text-emerald-400"
                         : shifts.averageScoreShift < 0
-                        ? "text-rose-400"
+                        ? "text-rose-600 dark:text-rose-400"
                         : "text-slate-500"
                     }
                   >
                     {shifts.averageScoreShift > 0 ? "▲" : shifts.averageScoreShift < 0 ? "▼" : "•"}
                     {shifts.averageScoreShift > 0 ? `+${shifts.averageScoreShift.toFixed(2)}` : shifts.averageScoreShift.toFixed(2)} pts
                   </span>
-                  <span className="text-slate-500 print-text-muted">vs prior</span>
+                  <span className="text-slate-400 dark:text-slate-500 print-text-muted">vs prior</span>
                 </>
               ) : (
-                <span className="text-slate-500 print-text-muted">No comparison baseline</span>
+                <span className="text-slate-400 dark:text-slate-500 print-text-muted">No comparison baseline</span>
               )}
             </div>
           </div>
 
           {/* Classification Coverage */}
-          <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/40 print-card space-y-1.5">
-            <div className="text-xs text-slate-400 print-text-muted font-medium">Classification Coverage</div>
-            <div className="text-2xl font-black text-white print-text-dark">
+          <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm print-card space-y-1.5">
+            <div className="text-xs text-slate-500 dark:text-slate-400 print-text-muted font-medium">Classification Coverage</div>
+            <div className="text-2xl font-black text-slate-900 dark:text-white print-text-dark">
               {metrics.classifiedCount}{" "}
               <span className="text-xs font-normal text-slate-400 print-text-muted">/ {metrics.totalFeedback}</span>
             </div>
-            <div className="text-[11px] text-slate-500 print-text-muted">
+            <div className="text-[11px] text-slate-400 dark:text-slate-500 print-text-muted">
               {metrics.unclassifiedCount} unclassified records
             </div>
           </div>
         </div>
 
         {/* Sentiment Distribution Bar */}
-        <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/40 print-card space-y-2.5">
-          <div className="flex items-center justify-between text-xs text-slate-300 print-text-dark">
+        <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm print-card space-y-2.5">
+          <div className="flex items-center justify-between text-xs text-slate-700 dark:text-slate-300 print-text-dark">
             <span className="font-semibold">Sentiment Breakdown (Classified: {metrics.classifiedCount})</span>
             <div className="flex items-center gap-4 text-[11px]">
-              <span className="text-emerald-400 flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-emerald-400" /> Positive ({metrics.positiveCount})
+              <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-medium">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" /> Positive ({metrics.positiveCount})
               </span>
-              <span className="text-slate-400 flex items-center gap-1">
+              <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1 font-medium">
                 <span className="h-2 w-2 rounded-full bg-slate-400" /> Neutral ({metrics.neutralCount})
               </span>
-              <span className="text-rose-400 flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-rose-400" /> Negative ({metrics.negativeCount})
+              <span className="text-rose-600 dark:text-rose-400 flex items-center gap-1 font-medium">
+                <span className="h-2 w-2 rounded-full bg-rose-500" /> Negative ({metrics.negativeCount})
               </span>
             </div>
           </div>
 
           {metrics.classifiedCount > 0 ? (
-            <div className="h-3 w-full rounded-full overflow-hidden flex bg-slate-950">
+            <div className="h-3 w-full rounded-full overflow-hidden flex bg-slate-100 dark:bg-slate-950">
               <div style={{ width: `${posPct}%` }} className="bg-emerald-500 transition-all" title={`Positive: ${posPct}%`} />
-              <div style={{ width: `${neuPct}%` }} className="bg-slate-500 transition-all" title={`Neutral: ${neuPct}%`} />
+              <div style={{ width: `${neuPct}%` }} className="bg-slate-400 transition-all" title={`Neutral: ${neuPct}%`} />
               <div style={{ width: `${negPct}%` }} className="bg-rose-500 transition-all" title={`Negative: ${negPct}%`} />
             </div>
           ) : (
-            <div className="h-3 w-full rounded-full bg-slate-800 flex items-center justify-center text-[10px] text-slate-500">
+            <div className="h-3 w-full rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] text-slate-400">
               No classified records in period
             </div>
           )}
 
-          <div className="pt-1 text-xs text-slate-400 print-text-muted italic">
+          <div className="pt-1 text-xs text-slate-500 dark:text-slate-400 print-text-muted italic">
             &quot;{shifts.shiftDescription}&quot;
           </div>
         </div>
@@ -373,18 +373,18 @@ export default function ReportDetailPage() {
 
       {/* 3. Top Themes */}
       <div className="space-y-3">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 print-text-dark flex items-center gap-2">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 print-text-dark flex items-center gap-2">
           <span>🏷️</span> Top Customer Themes
         </h2>
 
         {content.topThemes.length === 0 ? (
-          <div className="p-6 rounded-xl border border-slate-800 bg-slate-900/30 text-center text-xs text-slate-500 print-card">
+          <div className="p-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/30 text-center text-xs text-slate-400 print-card shadow-sm">
             No themes classified for feedback in this reporting period.
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/40 print-card">
+          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm print-card">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 bg-slate-950/60 text-slate-400 uppercase tracking-wider text-[10px]">
+              <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-slate-500 dark:text-slate-400 uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="py-3 px-4">Theme Name</th>
                   <th className="py-3 px-3 text-right">Volume</th>
@@ -395,26 +395,26 @@ export default function ReportDetailPage() {
                   <th className="py-3 px-4 text-right">Volume Shift</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 text-slate-200 print-text-dark">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-200 print-text-dark">
                 {content.topThemes.map((theme) => (
-                  <tr key={theme.id} className="hover:bg-slate-800/30 transition-colors">
+                  <tr key={theme.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition-colors">
                     <td className="py-3 px-4 font-semibold flex items-center gap-2">
                       <span
                         className="h-2 w-2 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: theme.color || "#6366F1" }}
+                        style={{ backgroundColor: theme.color || "#2563eb" }}
                       />
                       <span className="truncate max-w-[200px]">{theme.name}</span>
                     </td>
-                    <td className="py-3 px-3 text-right font-mono font-bold text-white print-text-dark">
+                    <td className="py-3 px-3 text-right font-mono font-bold text-slate-900 dark:text-white print-text-dark">
                       {theme.count}
                     </td>
-                    <td className="py-3 px-3 text-right font-mono text-slate-400 print-text-muted">
+                    <td className="py-3 px-3 text-right font-mono text-slate-500 dark:text-slate-400 print-text-muted">
                       {theme.percentage.toFixed(1)}%
                     </td>
-                    <td className="py-3 px-3 text-right font-mono text-rose-400">
+                    <td className="py-3 px-3 text-right font-mono text-rose-600 dark:text-rose-400 font-semibold">
                       {theme.negativeCount}
                     </td>
-                    <td className="py-3 px-3 text-right font-mono text-rose-400">
+                    <td className="py-3 px-3 text-right font-mono text-rose-600 dark:text-rose-400 font-semibold">
                       {theme.negativePercentage.toFixed(1)}%
                     </td>
                     <td className="py-3 px-3 text-right font-mono">
@@ -422,23 +422,23 @@ export default function ReportDetailPage() {
                         <span
                           className={
                             theme.averageSentimentScore > 0
-                              ? "text-emerald-400"
+                              ? "text-emerald-600 dark:text-emerald-400 font-medium"
                               : theme.averageSentimentScore < 0
-                              ? "text-rose-400"
-                              : "text-slate-400"
+                              ? "text-rose-600 dark:text-rose-400 font-medium"
+                              : "text-slate-500"
                           }
                         >
                           {theme.averageSentimentScore >= 0 ? `+${theme.averageSentimentScore.toFixed(2)}` : theme.averageSentimentScore.toFixed(2)}
                         </span>
                       ) : (
-                        <span className="text-slate-600">N/A</span>
+                        <span className="text-slate-400">N/A</span>
                       )}
                     </td>
                     <td className="py-3 px-4 text-right font-mono font-semibold">
                       <span
                         className={
                           theme.volumeChange > 0
-                            ? "text-indigo-400"
+                            ? "text-blue-600 dark:text-blue-400"
                             : theme.volumeChange < 0
                             ? "text-slate-400"
                             : "text-slate-500"
@@ -457,15 +457,15 @@ export default function ReportDetailPage() {
 
       {/* 4. Representative Customer Quotes */}
       <div className="space-y-3">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 print-text-dark flex items-center gap-2">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 print-text-dark flex items-center gap-2">
           <span>💬</span> Representative Customer Quotes
         </h2>
-        <p className="text-xs text-slate-500 print-text-muted">
+        <p className="text-xs text-slate-400 dark:text-slate-500 print-text-muted">
           Actual feedback items captured in this period, preserving authentic customer voices and IDs.
         </p>
 
         {content.representativeQuotes.length === 0 ? (
-          <div className="p-6 rounded-xl border border-slate-800 bg-slate-900/30 text-center text-xs text-slate-500 print-card">
+          <div className="p-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/30 text-center text-xs text-slate-400 print-card shadow-sm">
             No customer quotes available for this period.
           </div>
         ) : (
@@ -473,44 +473,44 @@ export default function ReportDetailPage() {
             {content.representativeQuotes.map((q) => (
               <div
                 key={q.feedbackId}
-                className="p-4 rounded-xl border border-slate-800 bg-slate-900/40 print-card space-y-2.5 flex flex-col justify-between"
+                className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 print-card space-y-2.5 flex flex-col justify-between shadow-sm"
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <span
                       className={`px-2 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wider ${
                         q.sentiment === "NEG"
-                          ? "border-rose-500/40 bg-rose-500/10 text-rose-300"
+                          ? "border-rose-200 dark:border-rose-500/40 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300"
                           : q.sentiment === "POS"
-                          ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
-                          : "border-slate-500/40 bg-slate-500/10 text-slate-300"
+                          ? "border-emerald-200 dark:border-emerald-500/40 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                          : "border-slate-200 dark:border-slate-500/40 bg-slate-100 dark:bg-slate-500/10 text-slate-700 dark:text-slate-300"
                       }`}
                     >
                       {q.sentiment} ({q.sentimentScore >= 0 ? `+${q.sentimentScore.toFixed(2)}` : q.sentimentScore.toFixed(2)})
                     </span>
-                    <span className="font-mono text-[10px] text-slate-500 print-text-muted">
+                    <span className="font-mono text-[10px] text-slate-400 print-text-muted">
                       #{q.feedbackId.slice(-8)}
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-200 print-text-dark italic leading-relaxed">
+                  <p className="text-xs text-slate-800 dark:text-slate-200 print-text-dark italic leading-relaxed">
                     &quot;{q.content}&quot;
                   </p>
                 </div>
 
-                <div className="pt-2 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-1.5 text-[10px] text-slate-400 print-text-muted">
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-1.5 text-[10px] text-slate-500 dark:text-slate-400 print-text-muted">
                   <div className="flex items-center gap-1.5">
-                    <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">
+                    <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">
                       {q.channel}
                     </span>
                     {q.customerLabel && (
-                      <span className="text-slate-500">[{q.customerLabel}]</span>
+                      <span className="text-slate-400">[{q.customerLabel}]</span>
                     )}
                   </div>
                   {q.themeNames.length > 0 && (
                     <div className="flex items-center gap-1">
                       {q.themeNames.slice(0, 2).map((tn) => (
-                        <span key={tn} className="px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                        <span key={tn} className="px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/20">
                           {tn}
                         </span>
                       ))}
@@ -525,15 +525,15 @@ export default function ReportDetailPage() {
 
       {/* 5. Prioritized Recommendations */}
       <div className="space-y-3">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 print-text-dark flex items-center gap-2">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 print-text-dark flex items-center gap-2">
           <span>🎯</span> Prioritized Recommendations
         </h2>
-        <p className="text-xs text-slate-500 print-text-muted">
+        <p className="text-xs text-slate-400 dark:text-slate-500 print-text-muted">
           Action items synthesized from feedback trends, negative themes, and customer evidence.
         </p>
 
         {content.recommendations.length === 0 ? (
-          <div className="p-6 rounded-xl border border-slate-800 bg-slate-900/30 text-center text-xs text-slate-500 print-card">
+          <div className="p-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/30 text-center text-xs text-slate-400 print-card shadow-sm">
             No recommendations generated.
           </div>
         ) : (
@@ -541,37 +541,37 @@ export default function ReportDetailPage() {
             {content.recommendations.map((rec, idx) => (
               <div
                 key={rec.id || idx}
-                className="p-5 rounded-xl border border-slate-800 bg-slate-900/40 print-card space-y-2.5"
+                className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm print-card space-y-2.5"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-2.5">
                     <span
                       className={`px-2.5 py-0.5 rounded-full border text-[11px] font-bold tracking-wide ${
                         rec.priority === "HIGH"
-                          ? "border-rose-500/40 bg-rose-500/10 text-rose-300"
+                          ? "border-rose-200 dark:border-rose-500/40 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300"
                           : rec.priority === "MEDIUM"
-                          ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
-                          : "border-blue-500/40 bg-blue-500/10 text-blue-300"
+                          ? "border-amber-200 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300"
+                          : "border-blue-200 dark:border-blue-500/40 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300"
                       }`}
                     >
                       {rec.priority} PRIORITY
                     </span>
-                    <span className="text-xs font-semibold text-indigo-400 print-text-dark">
+                    <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 print-text-dark">
                       Area: {rec.area}
                     </span>
                   </div>
-                  <span className="font-mono text-[10px] text-slate-500 print-text-muted">
+                  <span className="font-mono text-[10px] text-slate-400 print-text-muted">
                     ID: {rec.id}
                   </span>
                 </div>
 
-                <h3 className="text-sm font-bold text-white print-text-dark">{rec.title}</h3>
-                <p className="text-xs text-slate-300 print-text-dark leading-relaxed">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white print-text-dark">{rec.title}</h3>
+                <p className="text-xs text-slate-700 dark:text-slate-300 print-text-dark leading-relaxed">
                   {rec.description}
                 </p>
 
-                <div className="p-3 rounded-lg border border-slate-800/80 bg-slate-950/60 print-card text-[11px] text-slate-400 print-text-muted">
-                  <strong className="text-slate-300 print-text-dark">Traceable Evidence: </strong>
+                <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-950/60 print-card text-[11px] text-slate-600 dark:text-slate-400 print-text-muted">
+                  <strong className="text-slate-800 dark:text-slate-200 print-text-dark">Traceable Evidence: </strong>
                   {rec.evidence}
                 </div>
               </div>

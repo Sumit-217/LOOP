@@ -83,22 +83,22 @@ export default function ThemesIntelligenceClient() {
       {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-xs font-semibold tracking-wide uppercase mb-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
-            Phase 5 — Themes & Trends Intelligence
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 text-xs font-semibold tracking-wide uppercase mb-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-blue-600" />
+            Themes & Trends Intelligence
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Themes & Trends Intelligence
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
             Workspace-scoped feedback clustering, volume dynamics, sentiment trajectories, and deterministic spike detection.
           </p>
         </div>
 
         {/* Global Date Range Controls */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400 font-medium">Window:</span>
-          <div className="inline-flex p-1 rounded-xl bg-slate-900 border border-slate-800 shadow-inner">
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Window:</span>
+          <div className="inline-flex p-1 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
             {(["7d", "30d", "60d"] as TrendRange[]).map((r) => (
               <button
                 key={r}
@@ -106,8 +106,8 @@ export default function ThemesIntelligenceClient() {
                 onClick={() => setSelectedRange(r)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                   selectedRange === r
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 {r === "7d" ? "Last 7 Days" : r === "30d" ? "Last 30 Days" : "Last 60 Days"}
@@ -119,78 +119,78 @@ export default function ThemesIntelligenceClient() {
 
       {/* KPI Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-xl border border-slate-800 bg-slate-900/60 shadow-lg flex items-center justify-between">
+        <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Active Themes
             </span>
-            <div className="text-2xl font-black text-white mt-1">{totalThemes}</div>
-            <span className="text-[11px] text-slate-500 mt-0.5 block">
+            <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{totalThemes}</div>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 block">
               Workspace taxonomy
             </span>
           </div>
-          <div className="h-11 w-11 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold text-lg">
+          <div className="h-11 w-11 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-lg">
             🏷️
           </div>
         </div>
 
-        <div className="p-5 rounded-xl border border-slate-800 bg-slate-900/60 shadow-lg flex items-center justify-between">
+        <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Theme Feedback Links
             </span>
-            <div className="text-2xl font-black text-white mt-1">{totalFeedbackCount}</div>
-            <span className="text-[11px] text-slate-500 mt-0.5 block">
+            <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{totalFeedbackCount}</div>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 block">
               {totalClassifiedCount} classified
             </span>
           </div>
-          <div className="h-11 w-11 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-lg">
+          <div className="h-11 w-11 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-lg">
             💬
           </div>
         </div>
 
-        <div className="p-5 rounded-xl border border-slate-800 bg-slate-900/60 shadow-lg flex items-center justify-between">
+        <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Overall Negative %
             </span>
             <div
-              className={`text-2xl font-black mt-1 ${
+              className={`text-2xl font-extrabold mt-1 ${
                 overallNegativePct >= 40
-                  ? "text-rose-400"
+                  ? "text-rose-600 dark:text-rose-400"
                   : overallNegativePct >= 20
-                  ? "text-amber-400"
-                  : "text-emerald-400"
+                  ? "text-amber-600 dark:text-amber-400"
+                  : "text-emerald-600 dark:text-emerald-400"
               }`}
             >
               {overallNegativePct}%
             </div>
-            <span className="text-[11px] text-slate-500 mt-0.5 block">
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 block">
               {totalNegativeCount} negative signals
             </span>
           </div>
-          <div className="h-11 w-11 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 font-bold text-lg">
+          <div className="h-11 w-11 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 flex items-center justify-center text-rose-600 dark:text-rose-400 font-bold text-lg">
             ⚠️
           </div>
         </div>
 
-        <div className="p-5 rounded-xl border border-slate-800 bg-slate-900/60 shadow-lg flex items-center justify-between">
+        <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm flex items-center justify-between">
           <div>
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Spike Signals
             </span>
-            <div className="text-2xl font-black text-white mt-1">
+            <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
               {spikingThemes.length}
             </div>
-            <span className="text-[11px] text-slate-500 mt-0.5 block">
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 block">
               {spikingThemes.length > 0 ? "Themes with surges" : "Stable volume"}
             </span>
           </div>
           <div
             className={`h-11 w-11 rounded-xl border flex items-center justify-center font-bold text-lg ${
               spikingThemes.length > 0
-                ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
-                : "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                ? "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30 text-amber-600 dark:text-amber-400"
+                : "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
             }`}
           >
             {spikingThemes.length > 0 ? "🔥" : "✓"}

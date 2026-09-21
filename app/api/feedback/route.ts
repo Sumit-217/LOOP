@@ -8,6 +8,7 @@ import { embedFeedback } from "@/lib/embeddings/service";
 /**
  * GET /api/feedback
  * Fetch feedback items scoped to the authenticated user's workspace.
+ * Supports search, channel, sentiment, themeId, status, and date range filters.
  * Accessible to ADMIN, ANALYST, and VIEWER roles.
  */
 export async function GET(req: NextRequest) {
@@ -19,8 +20,13 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
   const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20", 10)));
+  const search = searchParams.get("search")?.trim();
   const channel = searchParams.get("channel");
+  const sentiment = searchParams.get("sentiment");
+  const themeId = searchParams.get("themeId");
   const status = searchParams.get("status");
+  const startDate = searchParams.get("startDate");
+  const endDate = searchParams.get("endDate");
 
   const skip = (page - 1) * limit;
   const workspaceId = session.user.workspaceId;
@@ -30,12 +36,48 @@ export async function GET(req: NextRequest) {
     workspaceId,
   };
 
-  if (channel) {
+  // Search by content or customerLabel
+  if (search) {
+    where.OR = [
+      { content: { contains: search, mode: "insensitive" } },
+      { customerLabel: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  if (channel && channel !== "ALL") {
     where.channel = channel;
   }
 
-  if (status && Object.values(FeedbackStatus).includes(status as FeedbackStatus)) {
+  if (sentiment && sentiment !== "ALL" && Object.values(Sentiment).includes(sentiment as Sentiment)) {
+    where.sentiment = sentiment as Sentiment;
+  }
+
+  if (themeId && themeId !== "ALL") {
+    where.themes = {
+      some: {
+        themeId,
+      },
+    };
+  }
+
+  if (status && status !== "ALL" && Object.values(FeedbackStatus).includes(status as FeedbackStatus)) {
     where.status = status as FeedbackStatus;
+  }
+
+  if (startDate || endDate) {
+    where.createdAt = {};
+    if (startDate) {
+      const parsedStart = new Date(startDate);
+      if (!isNaN(parsedStart.getTime())) {
+        where.createdAt.gte = parsedStart;
+      }
+    }
+    if (endDate) {
+      const parsedEnd = new Date(endDate);
+      if (!isNaN(parsedEnd.getTime())) {
+        where.createdAt.lte = parsedEnd;
+      }
+    }
   }
 
   try {

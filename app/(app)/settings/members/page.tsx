@@ -84,8 +84,8 @@ export default function MembersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Workspace Members</h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Workspace Members</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Manage teammates and assign role-based access permissions within this workspace.
           </p>
         </div>
@@ -93,7 +93,7 @@ export default function MembersPage() {
         <button
           onClick={fetchMembers}
           disabled={isLoading}
-          className="self-start sm:self-auto px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-medium transition-colors"
+          className="self-start sm:self-auto px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium transition-colors shadow-sm"
         >
           {isLoading ? "Refreshing..." : "Refresh Members"}
         </button>
@@ -101,38 +101,38 @@ export default function MembersPage() {
 
       {/* Status Alerts */}
       {error && (
-        <div className="p-3.5 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-xs font-medium">
+        <div className="p-3.5 rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 text-xs font-medium">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-medium">
+        <div className="p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-medium">
           {success}
         </div>
       )}
 
       {!isAdmin && (
-        <div className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs font-medium">
+        <div className="p-3.5 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 text-xs font-medium">
           Note: You are currently viewing as {currentUserRole}. Only Administrators can modify team member roles.
         </div>
       )}
 
       {/* Members Table */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 shadow-xl overflow-hidden">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
         {isLoading ? (
-          <div className="p-8 text-center text-xs text-slate-500">
-            <span className="inline-block h-4 w-4 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mr-2 align-middle" />
+          <div className="p-8 text-center text-xs text-slate-400">
+            <span className="inline-block h-4 w-4 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mr-2 align-middle" />
             Loading workspace members...
           </div>
         ) : members.length === 0 ? (
-          <div className="p-8 text-center text-xs text-slate-500">
+          <div className="p-8 text-center text-xs text-slate-500 dark:text-slate-400">
             No members found in this workspace.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 bg-slate-950/60 text-slate-400 uppercase tracking-wider font-semibold">
+              <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">
                 <tr>
                   <th className="py-3.5 px-4 sm:px-6">Member</th>
                   <th className="py-3.5 px-4 sm:px-6">Email</th>
@@ -140,22 +140,22 @@ export default function MembersPage() {
                   <th className="py-3.5 px-4 sm:px-6">Joined Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/80">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                 {members.map((member) => {
                   const isSelf = member.id === currentUserId;
                   const isUpdating = updatingId === member.id;
 
                   return (
-                    <tr key={member.id} className="hover:bg-slate-800/30 transition-colors">
-                      <td className="py-3.5 px-4 sm:px-6 font-medium text-white flex items-center gap-2">
+                    <tr key={member.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition-colors">
+                      <td className="py-3.5 px-4 sm:px-6 font-medium text-slate-900 dark:text-white flex items-center gap-2">
                         <span>{member.name}</span>
                         {isSelf && (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-400">
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                             You
                           </span>
                         )}
                       </td>
-                      <td className="py-3.5 px-4 sm:px-6 text-slate-400 font-mono">
+                      <td className="py-3.5 px-4 sm:px-6 text-slate-500 dark:text-slate-400 font-mono">
                         {member.email}
                       </td>
                       <td className="py-3.5 px-4 sm:px-6">
@@ -166,17 +166,17 @@ export default function MembersPage() {
                             onChange={(e) =>
                               handleRoleChange(member.id, e.target.value as Role)
                             }
-                            className={`px-2.5 py-1 rounded-lg border text-xs font-semibold focus:outline-none transition-colors cursor-pointer bg-slate-950 ${
+                            className={`px-2.5 py-1 rounded-lg border text-xs font-semibold focus:outline-none transition-colors cursor-pointer bg-white dark:bg-slate-950 ${
                               member.role === Role.ADMIN
-                                ? "border-purple-500/40 text-purple-300"
+                                ? "border-purple-200 dark:border-purple-500/40 text-purple-700 dark:text-purple-300"
                                 : member.role === Role.ANALYST
-                                ? "border-blue-500/40 text-blue-300"
-                                : "border-emerald-500/40 text-emerald-300"
+                                ? "border-blue-200 dark:border-blue-500/40 text-blue-700 dark:text-blue-300"
+                                : "border-emerald-200 dark:border-emerald-500/40 text-emerald-700 dark:text-emerald-300"
                             } ${isUpdating ? "opacity-50 cursor-wait" : ""}`}
                           >
-                            <option value={Role.ADMIN} className="bg-slate-900 text-slate-200">ADMIN</option>
-                            <option value={Role.ANALYST} className="bg-slate-900 text-slate-200">ANALYST</option>
-                            <option value={Role.VIEWER} className="bg-slate-900 text-slate-200">VIEWER</option>
+                            <option value={Role.ADMIN} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-200">ADMIN</option>
+                            <option value={Role.ANALYST} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-200">ANALYST</option>
+                            <option value={Role.VIEWER} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-200">VIEWER</option>
                           </select>
                         ) : (
                           <span

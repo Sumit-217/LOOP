@@ -112,11 +112,11 @@ export default function RecentIngestTable({ refreshTrigger, userRole }: RecentIn
   };
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 backdrop-blur-sm space-y-4">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-white">Recently Ingested & Classified Feedback</h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Recently Ingested & Classified Feedback</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Showing latest {items.length} items from {totalCount} total in active workspace.
           </p>
         </div>
@@ -124,10 +124,10 @@ export default function RecentIngestTable({ refreshTrigger, userRole }: RecentIn
           type="button"
           onClick={fetchRecentItems}
           disabled={isLoading}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950 hover:bg-slate-800 text-slate-300 text-xs font-medium transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium transition-colors"
         >
           <svg
-            className={`w-3.5 h-3.5 text-indigo-400 ${isLoading ? "animate-spin" : ""}`}
+            className={`w-3.5 h-3.5 text-blue-600 dark:text-blue-400 ${isLoading ? "animate-spin" : ""}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -144,13 +144,13 @@ export default function RecentIngestTable({ refreshTrigger, userRole }: RecentIn
       </div>
 
       {error && (
-        <div className="p-3 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs">
+        <div className="p-3 rounded-xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300 text-xs">
           {error}
         </div>
       )}
 
       {isLoading && items.length === 0 ? (
-        <div className="py-12 text-center text-xs text-slate-500">
+        <div className="py-12 text-center text-xs text-slate-400">
           Loading workspace feedback...
         </div>
       ) : items.length === 0 ? (
@@ -159,8 +159,8 @@ export default function RecentIngestTable({ refreshTrigger, userRole }: RecentIn
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="border-b border-slate-800 text-slate-500 uppercase tracking-wider text-[11px]">
+          <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+            <thead className="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase tracking-wider text-[11px] bg-slate-50 dark:bg-slate-950/50">
               <tr>
                 <th className="py-2.5 px-3">Sentiment</th>
                 <th className="py-2.5 px-3">Feature Area</th>
@@ -170,12 +170,12 @@ export default function RecentIngestTable({ refreshTrigger, userRole }: RecentIn
                 <th className="py-2.5 px-3 text-right">AI Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
               {items.map((item) => {
                 const isClassified = Boolean(item.featureArea || item.sentimentScore !== 0.0 || item.sentiment !== "NEU");
 
                 return (
-                  <tr key={item.id} className="hover:bg-slate-800/30 transition-colors">
+                  <tr key={item.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition-colors">
                     {/* Sentiment & Score */}
                     <td className="py-3 px-3 whitespace-nowrap align-top">
                       {renderSentimentBadge(item)}

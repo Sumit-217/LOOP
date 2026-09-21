@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -66,24 +67,32 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-6 bg-slate-950 text-slate-100">
-      <div className="w-full max-w-md space-y-8 p-8 sm:p-10 rounded-2xl border border-slate-800 bg-slate-900/70 shadow-2xl backdrop-blur-sm">
+    <div className="min-h-screen flex flex-col justify-center items-center p-6 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+      <div className="w-full max-w-md space-y-6 p-8 sm:p-10 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl relative">
+        {/* Top right theme toggle */}
+        <div className="absolute top-5 right-5">
+          <ThemeToggle />
+        </div>
+
         {/* Header */}
-        <div className="text-center space-y-2">
-          <Link href="/" className="inline-block">
-            <span className="text-2xl font-black tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">
+        <div className="text-center space-y-2 pt-2">
+          <Link href="/" className="inline-flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span>
+            <span className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               LOOP
             </span>
           </Link>
-          <h1 className="text-xl font-bold text-white">Create a new workspace</h1>
-          <p className="text-xs text-slate-400">
-            Sign up to establish a dedicated, private tenant for your team
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Create a new workspace
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Sign up to establish a private, dedicated tenant for your team
           </p>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 text-xs font-medium">
+          <div className="p-3 rounded-lg border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 text-xs font-medium">
             {error}
           </div>
         )}
@@ -91,7 +100,7 @@ export default function SignupPage() {
         {/* Signup Form */}
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5" htmlFor="workspaceName">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="workspaceName">
               Company / Workspace Name
             </label>
             <input
@@ -101,12 +110,12 @@ export default function SignupPage() {
               value={workspaceName}
               onChange={(e) => setWorkspaceName(e.target.value)}
               placeholder="e.g. Acme Cloud"
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-800 bg-slate-950/80 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5" htmlFor="name">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="name">
               Full Name
             </label>
             <input
@@ -117,12 +126,12 @@ export default function SignupPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Alice Johnson"
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-800 bg-slate-950/80 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5" htmlFor="email">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="email">
               Work Email
             </label>
             <input
@@ -133,12 +142,12 @@ export default function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="alice@company.com"
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-800 bg-slate-950/80 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5" htmlFor="password">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5" htmlFor="password">
               Password (min 8 characters)
             </label>
             <input
@@ -150,18 +159,18 @@ export default function SignupPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-800 bg-slate-950/80 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-colors"
             />
           </div>
 
-          <div className="p-3 rounded-lg border border-slate-800 bg-slate-950/50 text-xs text-slate-400">
-            <span className="font-semibold text-slate-300">Creator Role:</span> The account creator is automatically assigned the <span className="text-indigo-400 font-semibold">ADMIN</span> role for this workspace.
+          <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-xs text-slate-500 dark:text-slate-400">
+            <span className="font-semibold text-slate-700 dark:text-slate-300">Creator Role:</span> Account creator is automatically assigned the <span className="text-blue-600 dark:text-blue-400 font-semibold">ADMIN</span> role for this workspace.
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-2.5 px-4 rounded-lg font-medium text-sm text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-indigo-600/20"
+            className="w-full py-2.5 px-4 rounded-lg font-semibold text-xs text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md shadow-blue-600/20"
           >
             {isLoading ? (
               <span className="inline-flex items-center gap-2">
@@ -175,9 +184,9 @@ export default function SignupPage() {
         </form>
 
         {/* Footer Link */}
-        <div className="text-center text-xs text-slate-400 pt-2 border-t border-slate-800/60">
+        <div className="text-center text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
           Already have an account?{" "}
-          <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+          <Link href="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold transition-colors">
             Sign in
           </Link>
         </div>

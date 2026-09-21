@@ -155,6 +155,17 @@ function calculateSentimentShifts(
 }
 
 /**
+ * Calculates non-overlapping, contiguous comparison period [compStart, periodStart)
+ */
+export function calculateComparisonPeriod(periodStart: Date, periodEnd: Date) {
+  const durationMs = periodEnd.getTime() - periodStart.getTime();
+  const start = new Date(periodStart.getTime() - durationMs);
+  const end = new Date(periodStart.getTime());
+  const durationDays = Math.max(1, Math.round(durationMs / (1000 * 60 * 60 * 24)));
+  return { start, end, durationMs, durationDays };
+}
+
+/**
  * Server-side VoC report generation service.
  * Enforces workspace isolation, deterministic metric aggregation,
  * real quote extraction, and grounded AI recommendations.
@@ -165,10 +176,10 @@ export async function generateVoCReport(params: GenerateReportParams) {
   // 1. Calculate duration and comparison window:
   // Current: [periodStart, periodEnd]
   // Comparison: [compStart, periodStart) - strictly less than periodStart so boundary feedback is not double-counted!
-  const durationMs = periodEnd.getTime() - periodStart.getTime();
-  const compStart = new Date(periodStart.getTime() - durationMs);
-  const compEnd = new Date(periodStart.getTime());
-  const durationDays = Math.max(1, Math.round(durationMs / (1000 * 60 * 60 * 24)));
+  const compPeriod = calculateComparisonPeriod(periodStart, periodEnd);
+  const compStart = compPeriod.start;
+  const compEnd = compPeriod.end;
+  const durationDays = compPeriod.durationDays;
 
   // 2. Query workspace feedback for current period [periodStart, periodEnd]
   const currentFeedback = await db.feedback.findMany({
