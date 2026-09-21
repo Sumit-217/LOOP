@@ -3,6 +3,7 @@ import { Role, Sentiment, FeedbackStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
 import { simulateChannelSchema } from "@/lib/validations/feedback";
+import { embedFeedback } from "@/lib/embeddings/service";
 
 // Realistic simulated template pools across channels
 const SIMULATED_CHANNEL_TEMPLATES: Record<
@@ -206,6 +207,18 @@ export async function POST(req: NextRequest) {
       orderBy: { createdAt: "desc" },
       take: requestedCount,
     });
+
+    // Attempt document embedding for newly simulated items non-blockingly
+    for (const item of createdItems) {
+      try {
+        await embedFeedback(item.id, workspaceId);
+      } catch (embErr) {
+        console.error(
+          `[Simulate Ingestion] Non-blocking embedding generation failed for feedback ${item.id}:`,
+          embErr
+        );
+      }
+    }
 
     return NextResponse.json(
       {

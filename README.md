@@ -8,22 +8,26 @@ Project LOOP is a corporate-grade multi-tenant web application designed to help 
 
 ## Current Phase
 
-**Phase 5 — Themes & Trends Intelligence**
+**Phase 6 — Embeddings + Semantic Search + Ask LOOP RAG**
 
-Workspace-scoped theme clustering, volume aggregation, sentiment distribution, multi-period trend analysis with daily buckets (7d, 30d, 60d), deterministic change and spike detection, server-side paginated drill-down, and interactive Recharts visualizations.
+Full-stack semantic search and grounded Question-Answering (Ask LOOP) over workspace customer feedback using PostgreSQL pgvector cosine similarity search and Google Gemini 2.5 Flash / `gemini-embedding-001`.
 
 ---
 
 ## AI Provider & Implementation Note
 
-**AI Provider**: Google Gemini  
-**Model**: Gemini 2.5 Flash (`gemini-2.5-flash`)
+- **AI Classification**: Google Gemini 2.5 Flash (`gemini-2.5-flash`)
+- **Embeddings**: `gemini-embedding-001`
+  - **Dimensions**: 768
+  - **Document Task**: `RETRIEVAL_DOCUMENT`
+  - **Query Task**: `RETRIEVAL_QUERY`
+- **Vector Store**: Supabase PostgreSQL + pgvector (0.8.2) with `vector(768)`
+- **RAG Answer Generation**: Google Gemini 2.5 Flash (`gemini-2.5-flash`)
 
-> [!NOTE]
-> **Implementation note**:  
-> The original project specification references Claude Sonnet 4.6.  
-> This implementation uses **Gemini 2.5 Flash** through a provider abstraction (`AIClassificationProvider`) to reduce development and API cost while preserving the ability to swap providers later.  
-> The `GEMINI_API_KEY` is strictly server-side and never exposed to client components. Phase 5 analytics rely purely on persisted database records and require zero live Gemini API calls.
+> [!IMPORTANT]
+> **Specification Deviation Note**:  
+> The original Zidio specification names Claude Sonnet 4.6. This implementation intentionally uses Google Gemini (Gemini 2.5 Flash and `gemini-embedding-001`) to reduce development and API costs while retaining clean provider abstractions (`EmbeddingProvider`, `AIClassificationProvider`, `RagAnswerProvider`) that support swapping to Claude or any other provider later.  
+> The `GEMINI_API_KEY` is strictly server-side and never exposed to the client.
 
 ---
 
@@ -35,24 +39,76 @@ Workspace-scoped theme clustering, volume aggregation, sentiment distribution, m
 * **Phase 3 — Feedback Ingestion**: ✅ Single submissions, CSV bulk import with error diagnostics, simulated external channels, 130+ seeded records.
 * **Phase 4 — AI Classification**: ✅ Single feedback classification, manual re-classification, provider abstraction (`AIClassificationProvider`), existing theme reuse, strict Zod validation, transactional persistence.
 * **Phase 5 — Themes & Trends Intelligence**: ✅ Workspace-scoped theme aggregation, volume metrics, sentiment breakdown, daily trend time series (7d, 30d, 60d), deterministic spike detection, server-side paginated drill-down, Recharts visualization.
+* **Phase 6 — Embeddings + Semantic Search + Ask LOOP**: ✅ 768-dim pgvector migration, deterministic mock provider, document and query embedding generation, idempotent workspace backfill, non-blocking ingestion hooks, parameterized SQL cosine search (`<=>`), bounded RAG context, anti-hallucination citation verification, Ask LOOP API and responsive interactive UI.
+
+---
+
+## Phase 6 Architecture & Technical Details
+
+### 1. Vector Embeddings (`gemini-embedding-001`)
+- **Provider Abstraction**: Decoupled via `EmbeddingProvider` interface in `lib/embeddings/types.ts`:
+  - `embedDocument(text: string): Promise<number[]>` (`RETRIEVAL_DOCUMENT`, 768 dimensions)
+  - `embedQuery(text: string): Promise<number[]>` (`RETRIEVAL_QUERY`, 768 dimensions)
+- **Runtime Validation**: `lib/embeddings/validation.ts` strictly validates that every vector contains exactly 768 finite numbers. Rejects non-arrays, wrong lengths, `NaN`, and `Infinity` without silent truncation or padding.
+- **Deterministic Mock Provider**: `lib/embeddings/providers/mock.ts` provides 100% deterministic 768-dim unit vectors for automated tests and offline development without network calls or `Math.random()`.
+
+### 2. pgvector Persistence & Idempotent Backfill
+- **Database Schema**: `embeddings.vector` column is PostgreSQL `vector(768)` managed with Prisma `Unsupported("vector(768)")`.
+- **Parameterized SQL**: All vector insertions and queries use Prisma tagged template parameters (`$executeRaw` / `$queryRaw`), strictly avoiding string interpolation:
+  ```sql
+  INSERT INTO "embeddings" ("id", "feedbackId", "vector", "createdAt")
+  VALUES ($1, $2, $3::vector(768), NOW())
+  ON CONFLICT ("feedbackId")
+  DO UPDATE SET "vector" = $3::vector(768), "createdAt" = NOW()
+  ```
+- **Controlled Backfill Service**: `backfillWorkspaceEmbeddings` in `lib/embeddings/service.ts`:
+  - Scoped strictly to target `workspaceId`.
+  - Idempotent and safe to rerun: finds feedback with `embedding: null`, skipping already indexed records.
+  - Successfully backfilled 246 feedback records in Acme SaaS demo workspace with zero duplicates.
+
+### 3. New Feedback Ingestion Integration
+- Integrated across manual feedback (`/api/feedback`), CSV bulk import (`/api/feedback/bulk`), and simulated channels (`/api/feedback/simulate`).
+- **Non-blocking Guarantee**: Feedback persistence is never rolled back or aborted if embedding generation fails. Any failures are logged and can be repaired at any time via backfill.
+
+### 4. Workspace-Isolated Semantic Retrieval (`lib/rag/retrieval.ts`)
+- **Cosine Distance**: Retrieves the closest semantic matches using the PostgreSQL pgvector `<=>` operator:
+  ```sql
+  SELECT f.id, f.content, f.channel, f."sourceRef", f."customerLabel", f.sentiment,
+         f."sentimentScore", f.status, f."featureArea", f."createdAt",
+         (e.vector <=> $1::vector(768)) AS "cosineDistance"
+  FROM "embeddings" e
+  JOIN "feedback" f ON f.id = e."feedbackId"
+  WHERE f."workspaceId" = $2
+  ORDER BY (e.vector <=> $1::vector(768)) ASC
+  LIMIT $3;
+  ```
+- **Strict Multi-Tenancy**: The tenant filter (`WHERE f."workspaceId" = $2`) occurs directly inside the SQL query. Cross-tenant leakage is physically impossible.
+- **Bounded Top-K**: Bounded between 3 and 8 (default: 6) to prevent unbounded memory or token usage.
+
+### 5. Grounding, Relevance & Anti-Hallucination Perimeter
+- **Relevance Threshold**: If retrieval returns 0 items or the best cosine distance exceeds `RELEVANCE_DISTANCE_THRESHOLD` (0.85), Ask LOOP returns a controlled response:
+  > *"I couldn't find enough relevant feedback in your workspace to answer that confidently. Try asking about a specific product area, theme, channel, or time period."*
+- **Bounded XML Context**: Sanitizes customer text and encloses untrusted feedback inside `<evidence_item>` tags within `<evidence_context>`. Instructions inside feedback cannot hijack system prompts.
+- **Citation Verification**: Every citation returned by the LLM is verified against the set of retrieved feedback IDs. Hallucinated citation IDs are discarded before reaching the client.
+
+### 6. Interactive Ask LOOP UI
+- Accessible to all authenticated roles (`ADMIN`, `ANALYST`, `VIEWER`) via the top navigation bar at `/ask-loop`.
+- Includes suggested questions, loading pulse state, grounded answer rendering, citation cards with direct quotes and channel badges, and empty/no-data/error states.
 
 ---
 
 ## Tech Stack
 
-Derived from `Zidio_Project_Web_1.1.pdf` with intentional Gemini provider abstraction:
-
 - **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript (Strict typing)
 - **Styling**: Tailwind CSS
-- **Database**: PostgreSQL (Neon / Supabase)
+- **Database**: PostgreSQL (Supabase) + pgvector (0.8.2)
 - **ORM**: Prisma ORM (v5.22.0 LTS)
 - **Authentication**: NextAuth.js (Auth.js v4) + bcryptjs
-- **AI Intelligence**: Google Gemini 2.5 Flash via `@google/genai` (with `AIClassificationProvider` abstraction)
-- **Embeddings & Search**: Vector embeddings (pgvector / hosted provider) *(Phase 8)*
-- **Visualizations**: Recharts *(Phase 5)*
+- **AI Intelligence**: Google Gemini 2.5 Flash via `@google/genai`
+- **Embeddings**: `gemini-embedding-001` (768 dimensions) via pgvector
+- **Visualizations**: Recharts
 - **Validation**: Zod (runtime perimeter defense)
-- **Deployment**: Vercel + Hosted PostgreSQL
 
 ---
 
@@ -63,106 +119,72 @@ Derived from `Zidio_Project_Web_1.1.pdf` with intentional Gemini provider abstra
 | Access Authenticated App (`/dashboard`) | ✅ | ✅ | ✅ |
 | View Workspace Intelligence & Feedback | ✅ | ✅ | ✅ |
 | View Themes & Trends Intelligence (`/themes`) | ✅ | ✅ | ✅ |
+| Ask LOOP Semantic Search & Q&A (`/ask-loop`) | ✅ | ✅ | ✅ |
 | View Team Members (`/settings/members`) | ✅ | ❌ | ❌ |
 | Modify Teammate Roles (Admin/Analyst/Viewer) | ✅ | ❌ | ❌ |
 | Create / Ingest Feedback (`/feedback/ingest`) | ✅ | ✅ | ❌ (403) |
 | Classify / Re-classify Feedback with AI | ✅ | ✅ | ❌ (403) |
-| Generate Voice-of-Customer Reports *(Phase 9)*| ✅ | ✅ | ❌ (403) |
-
-> **Security Rule**: RBAC is strictly enforced server-side via API authorization guards (`requireRole`). Client-side UI element hiding is purely cosmetic; forbidden requests return HTTP `403 Forbidden`. Read-only analytics endpoints allow `ADMIN`, `ANALYST`, and `VIEWER`.
-
----
-
-## Phase 5 — Themes & Trends Intelligence Architecture
-
-### 1. Theme Aggregation & Volume Metrics
-- **Strict Workspace Boundary**: Every query filters themes and feedback by `session.user.workspaceId`.
-- **Existing Taxonomy Only**: Phase 5 reuses existing workspace `Theme` records; it never creates new themes dynamically.
-- **Unclassified vs. Neutral Boundary**:
-  - A feedback record is **unclassified** if `featureArea === null`, `rationale === null`, `sentiment === "NEU"`, and `sentimentScore === 0.0`.
-  - Unclassified records are isolated into `unclassifiedCount` and are **never** counted as neutral, ensuring metrics are unpolluted.
-  - `negativePercentage` is computed strictly against classified records: `(negativeCount / classifiedCount) * 100`.
-  - `averageSentimentScore` strictly averages classified feedback scores between `-1.0` and `+1.0`.
-
-### 2. Trends & Daily Time Windows
-- Supports user-selectable windows: **Last 7 Days (`7d`)**, **Last 30 Days (`30d`)**, and **Last 60 Days (`60d`)**.
-- Aggregates feedback into daily continuous date buckets (`YYYY-MM-DD`).
-- Powers interactive Recharts area/line visualizations allowing multi-theme overlays and single-theme sentiment breakdown.
-
-### 3. Explainable Deterministic Spike / Change Detection
-Compares the current window ($N$ days) with the preceding period of equal length:
-- **Absolute Change**: $\Delta = C_{\text{curr}} - C_{\text{prev}}$
-- **Percentage Change**: $\frac{C_{\text{curr}} - C_{\text{prev}}}{C_{\text{prev}}} \times 100$
-- **Zero-Count & Edge Handling**:
-  - `prev = 0, curr = 0`: Flat (0%), description: *"No feedback recorded in the current or previous period."*
-  - `prev = 0, curr > 0`: 100%, description: *"Feedback volume reached X (new activity compared with zero in previous period)."*
-  - `Spike Flag`: Triggered neutrally when $\Delta \ge 3$ and percentage change $\ge 50\%$, or current $\ge 3$ from zero.
-
-### 4. Theme Drill-Down & Server-Side Pagination
-- Clicking any theme opens a drill-down modal displaying underlying feedback records with customer label, channel badges, sentiment score, AI feature area, and AI rationale.
-- Supports server-side pagination (`page`, `limit`) and dynamic filtering by channel and sentiment.
-- Foreign theme access attempts return `404 Not Found` to prevent cross-tenant enumeration.
+| Generate Voice-of-Customer Reports *(Phase 7)*| ✅ | ✅ | ❌ (403) |
 
 ---
 
 ## Demo Credentials (Local / Staging Only)
 
-The seeded demo workspace comes pre-configured with three role accounts for testing and evaluation:
-
 | Role | Email | Password | Scope / Permissions |
 | :--- | :--- | :--- | :--- |
 | **ADMIN** | `admin@loop.demo` | `DemoPass123!` | Full workspace administration, members management & AI classification |
 | **ANALYST** | `analyst@loop.demo` | `DemoPass123!` | Feedback ingestion, manual AI classification, and triage |
-| **VIEWER** | `viewer@loop.demo` | `DemoPass123!` | Read-only access to feedback intelligence and dashboards |
-
-*(Passwords are stored strictly as salted bcrypt one-way hashes; passwordHash is never returned to clients or embedded in session tokens).*
+| **VIEWER** | `viewer@loop.demo` | `DemoPass123!` | Read-only access to feedback intelligence and Ask LOOP |
 
 ---
 
-## Local Setup
+## Local Setup & Testing
 
-### 1. Installation
+### 1. Installation & Environment
 ```bash
 git clone https://github.com/Sumit-217/LOOP.git
 cd LOOP
 npm install
 ```
 
-### 2. Configure Environment Variables
-Copy `.env.example` to `.env.local` and add your credentials:
-
+Configure `.env`:
 ```env
 DATABASE_URL="postgresql://user:password@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require"
 NEXTAUTH_SECRET="a-secure-random-32-character-secret"
 NEXTAUTH_URL="http://localhost:3000"
 GEMINI_API_KEY="your-gemini-api-key"
 GEMINI_MODEL="gemini-2.5-flash"
+GEMINI_EMBEDDING_MODEL="gemini-embedding-001"
 ```
 
-### 3. Database Migration & Seed
+### 2. Automated Test Suite (All Phases)
+Run the full test suite covering all phases (Phase 3 through Phase 6):
 ```bash
-# Apply migrations
-npm run db:migrate
-
-# Seed baseline demo workspace & 130+ feedback records
-npm run db:seed
+npm test
 ```
 
-### 4. Running Verification Tests
+Or run individual verification suites:
 ```bash
-# Verify Phase 3 feedback ingestion
+# Phase 3 Ingestion Suite
 npx tsx scripts/verify-ingestion.ts
 
-# Verify Phase 4 AI classification engine
+# Phase 4 AI Classification Suite
 npx tsx scripts/verify-ai-classification.ts
 
-# Verify Phase 5 Themes & Trends intelligence
+# Phase 5 Themes & Trends Suite
 npx tsx scripts/verify-themes-trends.ts
+
+# Phase 6 pgvector Migration Verification
+npx tsx scripts/verify-pgvector-migration.ts
+
+# Phase 6 Embeddings & Ask LOOP Suite (27 tests)
+npx tsx scripts/verify-ask-loop.ts
+
+# Phase 6 Feedback Embeddings Backfill Script
+npx tsx scripts/backfill-embeddings.ts
 ```
 
-### 5. Start Development Server
+### 3. Production Build
 ```bash
-npm run dev
+npm run build
 ```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.

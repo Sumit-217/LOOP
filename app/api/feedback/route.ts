@@ -3,6 +3,7 @@ import { Role, Sentiment, FeedbackStatus, Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { requireAuth, requireRole } from "@/lib/auth";
 import { singleFeedbackSchema } from "@/lib/validations/feedback";
+import { embedFeedback } from "@/lib/embeddings/service";
 
 /**
  * GET /api/feedback
@@ -117,6 +118,16 @@ export async function POST(req: NextRequest) {
         workspaceId: session.user.workspaceId,
       },
     });
+
+    // Attempt document embedding non-blockingly; failure must not abort or roll back feedback ingestion
+    try {
+      await embedFeedback(feedback.id, session.user.workspaceId);
+    } catch (embedErr) {
+      console.error(
+        `[Feedback Ingestion] Non-blocking embedding generation failed for feedback ${feedback.id}:`,
+        embedErr
+      );
+    }
 
     return NextResponse.json(
       {

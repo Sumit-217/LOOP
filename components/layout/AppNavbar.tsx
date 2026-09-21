@@ -83,6 +83,17 @@ export default function AppNavbar() {
               Themes & Trends
             </Link>
 
+            <Link
+              href="/ask-loop"
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                pathname.startsWith("/ask-loop")
+                  ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/30"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              }`}
+            >
+              Ask LOOP
+            </Link>
+
             {isAdmin && (
               <Link
                 href="/settings/members"

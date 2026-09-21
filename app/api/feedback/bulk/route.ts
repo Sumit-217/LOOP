@@ -3,6 +3,7 @@ import { Role, Sentiment, FeedbackStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 import { requireRole } from "@/lib/auth";
 import { csvRowSchema, bulkFeedbackPayloadSchema } from "@/lib/validations/feedback";
+import { embedFeedback } from "@/lib/embeddings/service";
 
 interface BulkRowError {
   row: number;
@@ -144,6 +145,32 @@ export async function POST(req: NextRequest) {
         data: validRecords,
       });
       importedCount = result.count;
+
+      // Attempt document embedding for imported items non-blockingly
+      try {
+        const unindexed = await db.feedback.findMany({
+          where: {
+            workspaceId,
+            embedding: null,
+          },
+          select: { id: true },
+          take: importedCount,
+          orderBy: { createdAt: "desc" },
+        });
+
+        for (const item of unindexed) {
+          try {
+            await embedFeedback(item.id, workspaceId);
+          } catch (embErr) {
+            console.error(
+              `[Bulk Import] Non-blocking embedding generation failed for feedback ${item.id}:`,
+              embErr
+            );
+          }
+        }
+      } catch (postEmbErr) {
+        console.error("[Bulk Import] Non-blocking post-import embedding pass error:", postEmbErr);
+      }
     }
 
     const failedCount = errors.length;
