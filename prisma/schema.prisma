@@ -141,7 +141,7 @@ model Embedding {
   feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
 
   // Stored as Float array in Phase 1; vector similarity search wired in Phase 8
-  vector    Float[]
+  vector Unsupported("vector(768)")
   createdAt DateTime @default(now())
 
   @@map("embeddings")
